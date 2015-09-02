@@ -1,5 +1,5 @@
 
-package cz.hartrik.code.analyze;
+package cz.hartrik.linecount.analyze;
 
 import java.util.function.Consumer;
 

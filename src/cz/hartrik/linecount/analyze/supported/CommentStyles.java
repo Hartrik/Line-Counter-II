@@ -1,17 +1,18 @@
-
-package cz.hartrik.code.analyze;
+package cz.hartrik.linecount.analyze.supported;
 
 import cz.hartrik.common.Pair;
+import cz.hartrik.linecount.analyze.CommentStyle;
 
 /**
  * Definuje různé styly zapisování komentářů.
  *
- * @version 2014-09-02
+ * @version 2015-09-02
  * @author Patrik Harag
  */
-public enum CommentStyle {
+public enum CommentStyles implements CommentStyle {
 
     // pořadí parametrů může mít vliv!
+    //  - pokud řetězce začínají stejně (/*, /**)
 
     NONE(),
 
@@ -31,12 +32,13 @@ public enum CommentStyle {
     ;
 
     @SafeVarargs
-    private CommentStyle(Pair<String, String>... commentTypes) {
+    private CommentStyles(Pair<String, String>... commentTypes) {
         this.comments = commentTypes;
     }
 
     private final Pair<String, String>[] comments;
 
+    @Override
     public Pair<String, String>[] getComments() {
         return comments;
     }

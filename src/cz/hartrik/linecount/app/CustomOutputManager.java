@@ -1,7 +1,7 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.code.analyze.linecount.DataTypeCode;
+import cz.hartrik.linecount.analyze.DataTypeCode;
 import cz.hartrik.common.io.Resources;
 import cz.hartrik.jfxeditor.CodeEditor;
 import cz.hartrik.jfxeditor.build.CodeMirrorBuilder;

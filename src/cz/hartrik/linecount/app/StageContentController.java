@@ -1,12 +1,12 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.code.analyze.SimpleStringConsumer;
-import cz.hartrik.code.analyze.linecount.DataTypeCode;
-import cz.hartrik.code.analyze.linecount.LineCountStats;
 import cz.hartrik.common.ui.javafx.DragAndDropInitializer;
 import cz.hartrik.common.ui.javafx.SimpleFXMLLoader;
 import cz.hartrik.common.ui.javafx.TableInitializer;
+import cz.hartrik.linecount.analyze.DataTypeCode;
+import cz.hartrik.linecount.analyze.LineCountProvider;
+import cz.hartrik.linecount.analyze.SimpleStringConsumer;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
@@ -140,15 +140,15 @@ public class StageContentController implements Initializable {
         } else {
             final long startTime = System.currentTimeMillis();
             SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
-            LineCountStats lineCountStats = new LineCountStats(
+            LineCountProvider lineCountProvider = new LineCountProvider(
                     filterManager.getPredicate(), stringConsumer);
-            lineCountStats.analyze(paths);
+            lineCountProvider.analyze(paths);
             final long endTime = System.currentTimeMillis();
 
             stringConsumer.accept(
                     "--- výsledný čas: " + (endTime - startTime) + " ms");
 
-            Collection<DataTypeCode> values = lineCountStats.getStats().values();
+            Collection<DataTypeCode> values = lineCountProvider.getStats().values();
             List<DataTypeCode> list = values.stream()
                     .sorted((t1, t2) -> t1.getFileType().getName()
                             .compareTo(t2.getFileType().getName()))

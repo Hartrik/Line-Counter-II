@@ -1,7 +1,5 @@
 
-package cz.hartrik.code.analyze.linecount;
-
-import cz.hartrik.code.analyze.FileType;
+package cz.hartrik.linecount.analyze;
 
 /**
  * Objekt shromažďující data o zdrojových souborech napsaných v určitém
@@ -22,13 +20,15 @@ public class DataTypeCode extends DataTypeText {
         super(fileType);
     }
 
+    // --- get
+
     public int getLinesComment() { return linesComment; }
     public int getLinesEmpty()   { return linesEmpty; }
 
     public int getCharsIndent()  { return charsIndent; }
     public int getCharsComment() { return charsComment; }
 
-    // -- add
+    // --- add
 
     public void addLinesEmpty(int lines)   { this.linesEmpty += lines; }
     public void addLinesComment(int lines) { this.linesComment += lines; }

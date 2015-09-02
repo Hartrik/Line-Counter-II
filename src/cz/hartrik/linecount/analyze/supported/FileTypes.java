@@ -1,59 +1,60 @@
-
-package cz.hartrik.code.analyze;
+package cz.hartrik.linecount.analyze.supported;
 
 import cz.hartrik.common.Checker;
+import cz.hartrik.linecount.analyze.CommentStyle;
+import cz.hartrik.linecount.analyze.FileType;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Definuje podporované typy souborů.
  *
- * @version 2014-08-14
+ * @version 2015-09-02
  * @author Patrik Harag
  */
-public enum FileType {
+public enum FileTypes implements FileType {
 
-    C("C", CommentStyle.C_LIKE, "c", "ec", "pgc"),
-    C_H("C/C++ Header", CommentStyle.C_LIKE, "H", "h", "hh", "hpp"),
-    C_PP("C++", CommentStyle.C_LIKE, "C", "c++", "cc", "cpp", "cxx", "pcc"),
-    C_SHARP("C#", CommentStyle.C_LIKE, "cs"),
-    SCALA("Scala", CommentStyle.C_LIKE, "scala"),
-    GROOVY("Groovy", CommentStyle.C_LIKE, "groovy"),
-    JAVA("Java", CommentStyle.JAVA, "java"),
-    PASCAL("Pascal", CommentStyle.PASCAL, "dpr", "p", "pas"),
-    PYTHON("Python", CommentStyle.PYTHON, "py", "python"),
-    RUBY("Ruby", CommentStyle.RUBY, "rake", "rb"),
-    VBS("VBScript", CommentStyle.VB, "vbs"),
+    C("C", CommentStyles.C_LIKE, "c", "ec", "pgc"),
+    C_H("C/C++ Header", CommentStyles.C_LIKE, "H", "h", "hh", "hpp"),
+    C_PP("C++", CommentStyles.C_LIKE, "C", "c++", "cc", "cpp", "cxx", "pcc"),
+    C_SHARP("C#", CommentStyles.C_LIKE, "cs"),
+    SCALA("Scala", CommentStyles.C_LIKE, "scala"),
+    GROOVY("Groovy", CommentStyles.C_LIKE, "groovy"),
+    JAVA("Java", CommentStyles.JAVA, "java"),
+    PASCAL("Pascal", CommentStyles.PASCAL, "dpr", "p", "pas"),
+    PYTHON("Python", CommentStyles.PYTHON, "py", "python"),
+    RUBY("Ruby", CommentStyles.RUBY, "rake", "rb"),
+    VBS("VBScript", CommentStyles.VB, "vbs"),
 
-    TXT("Textové dokumenty", CommentStyle.NONE, true, false, "txt", "TXT"),
-    OTHER("• Ostatní", CommentStyle.NONE, false, false, "*"),
+    TXT("Plain text", CommentStyles.NONE, true, false, "txt", "TXT"),
+    OTHER("• Ostatní", CommentStyles.NONE, false, false, "*"),
 
     // nové
 
-    XML("XML", CommentStyle.XML, "xml"),
-    FXML("FXML", CommentStyle.XML, "fxml"),
-    HTML("HTML", CommentStyle.XML, "html", "htm"),
+    XML("XML", CommentStyles.XML, "xml"),
+    FXML("FXML", CommentStyles.XML, "fxml"),
+    HTML("HTML", CommentStyles.XML, "html", "htm"),
 
-    CSS("CSS", CommentStyle.CSS, "css"),
+    CSS("CSS", CommentStyles.CSS, "css"),
 
-    KOTLIN("Kotlin", CommentStyle.C_LIKE, "kt"),
-    JS("JavaScript", CommentStyle.C_LIKE, "js"),
-    PHP("PHP", CommentStyle.PHP, "php"),
-    OBJECTIVE_C("Objective-C", CommentStyle.C_LIKE, "m"),
-    VB("Visual Basic", CommentStyle.VB, "vb"),
-    LISP("Lisp", CommentStyle.LISP, "lisp", "cl"),
-    CLOJURE("Clojure", CommentStyle.LISP, "clj"),
-    ERLANG("Erlang", CommentStyle.ERLANG, "erl"),
-    LUA("Lua", CommentStyle.LUA, "lua"),
+    KOTLIN("Kotlin", CommentStyles.C_LIKE, "kt"),
+    JS("JavaScript", CommentStyles.C_LIKE, "js"),
+    PHP("PHP", CommentStyles.PHP, "php"),
+    OBJECTIVE_C("Objective-C", CommentStyles.C_LIKE, "m"),
+    VB("Visual Basic", CommentStyles.VB, "vb"),
+    LISP("Lisp", CommentStyles.LISP, "lisp", "cl"),
+    CLOJURE("Clojure", CommentStyles.LISP, "clj"),
+    ERLANG("Erlang", CommentStyles.ERLANG, "erl"),
+    LUA("Lua", CommentStyles.LUA, "lua"),
 
-    PROPERTIES("Properties", CommentStyle.NONE, true, false, "properties"),
+    PROPERTIES("Properties", CommentStyles.NONE, true, false, "properties"),
     ;
 
     // vyhledávání
 
     private static final Map<String, FileType> map = new HashMap<>();
     static {
-        for (FileType type : FileType.values())
+        for (FileType type : values())
             for (String ext : type.getExtensions())
                 map.put(ext, type);
     }
@@ -78,14 +79,14 @@ public enum FileType {
     private final boolean sourceCode;
 
     @SafeVarargs
-    private FileType(String name, CommentStyle commentStyle,
+    private FileTypes(String name, CommentStyle commentStyle,
             String... extensions) {
 
         this(name, commentStyle, true, true, extensions);
     }
 
     @SafeVarargs
-    private FileType(String name, CommentStyle commentStyle,
+    private FileTypes(String name, CommentStyle commentStyle,
             boolean textDocument, boolean sourceCode, String... extensions) {
 
         this.name = Checker.requireNonEmpty(name);
@@ -95,6 +96,7 @@ public enum FileType {
         this.sourceCode = sourceCode;
     }
 
+    @Override
     public boolean containsExtension(String extension) {
         for (String string : extensions) {
             if (extension.equals(string))
@@ -103,22 +105,27 @@ public enum FileType {
         return false;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String[] getExtensions() {
         return extensions;
     }
 
+    @Override
     public CommentStyle getCommentStyle() {
         return commentStyle;
     }
 
+    @Override
     public boolean isSourceCode() {
         return sourceCode;
     }
 
+    @Override
     public boolean isTextDocument() {
         return textDocument;
     }

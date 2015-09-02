@@ -1,9 +1,8 @@
 
-package cz.hartrik.code.analyze.linecount;
+package cz.hartrik.linecount.analyze;
 
-import cz.hartrik.code.analyze.FileStats;
-import cz.hartrik.code.analyze.FileType;
 import cz.hartrik.common.io.NioUtil;
+import cz.hartrik.linecount.analyze.supported.FileTypes;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -17,10 +16,10 @@ import java.util.function.Predicate;
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  *
- * @version 2014-08-11
+ * @version 2015-09-02
  * @author Patrik Harag
  */
-public class LineCountStats extends FileStats {
+public class LineCountProvider extends FileAnalyzeProvider {
 
     protected final Predicate<Path> filter;
     protected final Consumer<String> logConsumer;
@@ -28,15 +27,15 @@ public class LineCountStats extends FileStats {
 
     protected final UnknownFileAnalyzer unknownFileAnalyzer;
     protected final TextFileAnalyzer textFileAnalyzer;
-    protected final SourceFileAnalyzer sourceFileAnalyzer;
+    protected final SourceCodeAnalyzer sourceFileAnalyzer;
 
-    public LineCountStats(Predicate<Path> filter, Consumer<String> logConsumer) {
+    public LineCountProvider(Predicate<Path> filter, Consumer<String> logConsumer) {
         this.filter = filter;
         this.logConsumer = logConsumer;
 
         this.unknownFileAnalyzer = new UnknownFileAnalyzer();
         this.textFileAnalyzer    = new TextFileAnalyzer();
-        this.sourceFileAnalyzer  = new SourceFileAnalyzer();
+        this.sourceFileAnalyzer  = new SourceCodeAnalyzer();
     }
 
     // implementace abstraktních metod
@@ -58,9 +57,9 @@ public class LineCountStats extends FileStats {
             }
 
             String extension = NioUtil.getExtension(path);
-            FileType type = FileType.getByExtension(extension);
+            FileType type = FileTypes.getByExtension(extension);
 
-            if (type == FileType.OTHER)
+            if (type == FileTypes.OTHER)
                 logConsumer.accept("Soubor neznámého typu - " + path.toString());
 
             DataTypeCode typeData = getData(type);

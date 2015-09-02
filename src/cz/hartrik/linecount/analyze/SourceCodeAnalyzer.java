@@ -1,8 +1,6 @@
 
-package cz.hartrik.code.analyze.linecount;
+package cz.hartrik.linecount.analyze;
 
-import cz.hartrik.code.analyze.CommentParser;
-import cz.hartrik.code.analyze.CommentStyle;
 import cz.hartrik.common.Pair;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,10 +10,17 @@ import java.util.List;
 /**
  * Analyzuje zdrojový kód.
  *
- * @version 2014-08-05
+ * @version 2015-09-02
  * @author Patrik Harag
  */
-public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeCode> {
+public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
+
+    @Override
+    public DataTypeCode analyze(Path file, FileType fileType) throws IOException {
+        DataTypeCode data = new DataTypeCode(fileType);
+        analyze(file, data);
+        return data;
+    }
 
     @Override
     public void analyze(Path path, DataTypeCode data) throws IOException {

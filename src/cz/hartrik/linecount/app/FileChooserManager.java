@@ -1,8 +1,8 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.code.analyze.FileType;
 import cz.hartrik.common.io.NioUtil;
+import cz.hartrik.linecount.analyze.supported.FileTypes;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +30,7 @@ public class FileChooserManager {
         chooser.setTitle(TITLE);
         chooser.setInitialDirectory(NioUtil.workingDirectory().toFile());
 
-        List<String> exts = Arrays.stream(FileType.getAllFileExtensions())
+        List<String> exts = Arrays.stream(FileTypes.getAllFileExtensions())
                 .filter(ext -> !ext.equals("*"))
                 .map(ext -> "*.".concat(ext))
                 .collect(Collectors.toList());

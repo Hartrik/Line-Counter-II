@@ -1,6 +1,6 @@
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.code.analyze.linecount.DataTypeCode;
+import cz.hartrik.linecount.analyze.DataTypeCode;
 import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;

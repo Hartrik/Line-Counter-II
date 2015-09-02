@@ -1,4 +1,4 @@
-package cz.hartrik.code.analyze;
+package cz.hartrik.linecount.analyze;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,16 +11,16 @@ import java.util.Set;
 /**
  * Zprostředkuje analýzu souborů, zamezí opakované analýze stejného souboru.
  *
- * @version 2014-08-11
+ * @version 2015-09-02
  * @author Patrik Harag
  */
-public abstract class FileStats implements IStats {
+public abstract class FileAnalyzeProvider {
 
     private final Set<String> analyzed;
 
     // konstruktory
 
-    public FileStats() {
+    public FileAnalyzeProvider() {
         this.analyzed = new LinkedHashSet<>();
     }
 
@@ -32,13 +32,11 @@ public abstract class FileStats implements IStats {
 
     // metody
 
-    @Override
     public void analyze(Path... paths) {
         if (paths.length != 0)
             analyze(Arrays.asList(paths));
     }
 
-    @Override
     public void analyze(Collection<Path> paths) {
         explore(paths);
     }

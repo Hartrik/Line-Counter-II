@@ -1,7 +1,5 @@
 
-package cz.hartrik.code.analyze.linecount;
-
-import cz.hartrik.code.analyze.FileType;
+package cz.hartrik.linecount.analyze;
 
 /**
  * Objekt shromažďující data o typu souboru.
