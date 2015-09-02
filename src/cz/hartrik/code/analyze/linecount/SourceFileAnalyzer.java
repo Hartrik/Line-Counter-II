@@ -5,7 +5,6 @@ import cz.hartrik.code.analyze.CommentParser;
 import cz.hartrik.code.analyze.CommentStyle;
 import cz.hartrik.common.Pair;
 import java.io.IOException;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -16,10 +15,10 @@ import java.util.List;
  * @version 2014-08-05
  * @author Patrik Harag
  */
-public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeSource> {
+public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeCode> {
 
     @Override
-    public void analyze(Path path, DataTypeSource data) throws IOException {
+    public void analyze(Path path, DataTypeCode data) throws IOException {
         
         StringBuilder builder = new StringBuilder();
         
@@ -46,7 +45,7 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeSource> {
             }
             
             data.addCharsIndent(indent);
-            data.addCharsTotal(length + 1);
+            data.addCharsTotal(length + 1); // počítá se i \n
             data.addCharsWhitespace(whitespace);
             
             data.addLinesTotal(1);
@@ -60,7 +59,7 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeSource> {
         data.addSizeTotal(Files.size(path));
     }
     
-    private int startWithComment(DataTypeSource data, String line,
+    private int startWithComment(DataTypeCode data, String line,
             char character) {
         
         CommentStyle cs = data.getFileType().getCommentStyle();
@@ -76,7 +75,7 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeSource> {
         return -1;
     }
     
-    private void finalizeComments(DataTypeSource data, StringBuilder builder) {
+    private void finalizeComments(DataTypeCode data, StringBuilder builder) {
         CommentParser parser = new CommentParser(
                 data.getFileType().getCommentStyle());
         List<String> analyze = parser.analyze(builder.toString());

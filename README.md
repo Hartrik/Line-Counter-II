@@ -2,9 +2,9 @@
 
 Počítač řádků je jednoduchý program, který Vám pomůže zjistit přibližnou velikost Vašeho projektu.
 
-Cesty k souborům mohou být pohodlně přidány přetažením do textové oblasti. Cesty mohou být relativní - vůči adresáři, ve kterém byl program spuštěn. Všechny adresáře budou procházeny rekurzivně.
+Cesty k souborům mohou být pohodlně přidány přetažením do textové oblasti. Cesty mohou být relativní - vůči adresáři, ve kterém byl program spuštěn. Adresáře jsou procházeny rekurzivně.
 
-Podporované jazyky: C, C++, C#, Java, Scala, Groovy, Python, Pascal, Ruby, VBScript
+Podporované jazyky: C, C++, C#, Clojure, CSS, Erlang, FXML, Groovy, HTML, Java, JavaScript, Kotlin, Lisp, Lua, Objective-C, Pascal, PHP, Python, Ruby, Scala, VBScript, Visual Basic, XML
 
 ## Popis sloupců
 
@@ -22,7 +22,20 @@ Podporované jazyky: C, C++, C#, Java, Scala, Groovy, Python, Pascal, Ruby, VBSc
   - **whitespace - celkem** – součet veškerých whitespace
   - **celkem** – součet veškerých znaků (včetně whitespace)
 
+*Tip: Kliknutím do záhlaví se obsah seřadí podle hodnot ve sloupce.*
+
+## Filtrování souborů
+
+Dialogové okno pro filtrování souborů je možné vyvolat kliknutím na tlačítko s ikonou filtru (po pravé straně od vstupního textového pole).
+
+Regulární výraz může být aplikován buď jen na název souboru (např.: `soubor.txt`) nebo na absolutní cestu k souboru (např.: `C:\Dokumenty\soubor.txt`).
+
 ## Mějte na paměti
+
 - Textové dokumenty jsou načítány s kódováním UTF-8.
 - Parser nepodporuje vnořené komentáře. (Ve většině jazyků stejně nejsou.)
 - Není prováděna syntaktická analýza kódu, a proto může v některých velice specifických případech dojít k nesprávnému započítání komentáře.
+
+**Ke spuštění je vyžadována Java 8.** Program se neinstaluje ani v počítači nezanechává žádná data.
+
+Při psaní jsem hleděl na objektový návrh a čistý kód. Používal jsem nejnovější knihovny a rozhraní (JavaFX, NIO, Stream API aj.).

@@ -3,61 +3,53 @@ package cz.hartrik.code.analyze.linecount;
 
 import cz.hartrik.code.analyze.FileStats;
 import cz.hartrik.code.analyze.FileType;
-import cz.hartrik.code.analyze.IStats;
 import cz.hartrik.util.io.NioUtil;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  * 
- * @version 2014-08-06
+ * @version 2014-08-11
  * @author Patrik Harag
  */
-public class LineCountStats implements IStats {
+public class LineCountStats extends FileStats {
     
+    protected final Predicate<Path> filter;
     protected final Consumer<String> logConsumer;
-    protected final FileStats fileStats;
-    protected final Map<FileType, DataTypeSource> stats = new LinkedHashMap<>();
+    protected final Map<FileType, DataTypeCode> stats = new LinkedHashMap<>();
     
     protected final UnknownFileAnalyzer unknownFileAnalyzer;
     protected final TextFileAnalyzer textFileAnalyzer;
     protected final SourceFileAnalyzer sourceFileAnalyzer;
     
-    public LineCountStats() {
-        this(string -> {});
-    }
-    
-    public LineCountStats(Consumer<String> logConsumer) {
+    public LineCountStats(Predicate<Path> filter, Consumer<String> logConsumer) {
+        this.filter = filter;
         this.logConsumer = logConsumer;
-        this.fileStats = new FileStats(this::consume, logConsumer);
-        
+
         this.unknownFileAnalyzer = new UnknownFileAnalyzer();
         this.textFileAnalyzer    = new TextFileAnalyzer();
         this.sourceFileAnalyzer  = new SourceFileAnalyzer();
     }
 
-    // instanční metody
+    // implementace abstraktních metod
     
     @Override
-    public void analyze(Path... paths) {
-        fileStats.analyze(paths);
-    }
-
-    @Override
-    public void analyze(Collection<Path> paths) {
-        fileStats.analyze(paths);
+    protected void consumeLog(String message) {
+        logConsumer.accept(message);
     }
     
-    protected void consume(Path path) {
+    @Override
+    protected void consumePath(Path path) {
+        if (!filter.test(path)) return;
+        
         if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
             
             if (!Files.isReadable(path)) {
@@ -71,7 +63,7 @@ public class LineCountStats implements IStats {
             if (type == FileType.OTHER)
                 logConsumer.accept("Soubor neznámého typu - " + path.toString());
             
-            DataTypeSource typeData = getData(type);
+            DataTypeCode typeData = getData(type);
             chooseFileAnalyzer(path, typeData);
             
         } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
@@ -82,7 +74,9 @@ public class LineCountStats implements IStats {
         }
     }
     
-    protected void chooseFileAnalyzer(Path path, DataTypeSource typeData) {
+    // metody
+    
+    protected void chooseFileAnalyzer(Path path, DataTypeCode typeData) {
         FileType fileType = typeData.getFileType();
         
         try {
@@ -100,10 +94,10 @@ public class LineCountStats implements IStats {
         }
     }
     
-    protected DataTypeSource getData(FileType type) {
+    protected DataTypeCode getData(FileType type) {
         if (!stats.containsKey(type)) {
             // nová položka
-            DataTypeSource typeData = new DataTypeSource(type);
+            DataTypeCode typeData = new DataTypeCode(type);
             stats.put(type, typeData);
             return typeData;
 
@@ -115,12 +109,8 @@ public class LineCountStats implements IStats {
 
     // gettery
     
-    public Map<FileType, DataTypeSource> getStats() {
+    public Map<FileType, DataTypeCode> getStats() {
         return stats;
-    }
-    
-    public Set<String> getAnalyzed() {
-        return fileStats.getAnalyzed();
     }
     
 }

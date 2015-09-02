@@ -8,12 +8,10 @@ import java.util.Map;
 /**
  * Definuje podporované typy souborů.
  * 
- * @version 2014-08-05
+ * @version 2014-08-14
  * @author Patrik Harag
  */
 public enum FileType {
-    
-    // typy
     
     C("C", CommentStyle.C_LIKE, "c", "ec", "pgc"),
     C_H("C/C++ Header", CommentStyle.C_LIKE, "H", "h", "hh", "hpp"),
@@ -21,15 +19,35 @@ public enum FileType {
     C_SHARP("C#", CommentStyle.C_LIKE, "cs"),
     SCALA("Scala", CommentStyle.C_LIKE, "scala"),
     GROOVY("Groovy", CommentStyle.C_LIKE, "groovy"),
-    
     JAVA("Java", CommentStyle.JAVA, "java"),
     PASCAL("Pascal", CommentStyle.PASCAL, "dpr", "p", "pas"),
     PYTHON("Python", CommentStyle.PYTHON, "py", "python"),
     RUBY("Ruby", CommentStyle.RUBY, "rake", "rb"),
-    VBS("VBScript", CommentStyle.VBS, "vbs"),
+    VBS("VBScript", CommentStyle.VB, "vbs"),
     
-    TXT("* Textové dokumenty", CommentStyle.NONE, true, false, "txt", "TXT"),
-    OTHER("* Ostatní", CommentStyle.NONE, false, false, "*");
+    TXT("Textové dokumenty", CommentStyle.NONE, true, false, "txt", "TXT"),
+    OTHER("• Ostatní", CommentStyle.NONE, false, false, "*"),
+    
+    // nové
+    
+    XML("XML", CommentStyle.XML, "xml"),
+    FXML("FXML", CommentStyle.XML, "fxml"),
+    HTML("HTML", CommentStyle.XML, "html", "htm"),
+    
+    CSS("CSS", CommentStyle.CSS, "css"),
+    
+    KOTLIN("Kotlin", CommentStyle.C_LIKE, "kt"),
+    JS("JavaScript", CommentStyle.C_LIKE, "js"),
+    PHP("PHP", CommentStyle.PHP, "php"),
+    OBJECTIVE_C("Objective-C", CommentStyle.C_LIKE, "m"),
+    VB("Visual Basic", CommentStyle.VB, "vb"),
+    LISP("Lisp", CommentStyle.LISP, "lisp", "cl"),
+    CLOJURE("Clojure", CommentStyle.LISP, "clj"),
+    ERLANG("Erlang", CommentStyle.ERLANG, "erl"),
+    LUA("Lua", CommentStyle.LUA, "lua"),
+    
+    PROPERTIES("Properties", CommentStyle.NONE, true, false, "properties"),
+    ;
     
     // vyhledávání
     
@@ -45,6 +63,10 @@ public enum FileType {
             return OTHER;
         
         return map.getOrDefault(extension, OTHER);
+    }
+    
+    public static String[] getAllFileExtensions() {
+        return map.keySet().toArray(new String[0]);
     }
     
     // instance
@@ -75,7 +97,7 @@ public enum FileType {
     
     public boolean containsExtension(String extension) {
         for (String string : extensions) {
-            if (extension.equalsIgnoreCase(string))
+            if (extension.equals(string))
                 return true;
         }
         return false;

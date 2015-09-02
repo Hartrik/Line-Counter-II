@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="infoPanel" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.hartrik.linecount.app.StagePanelAboutController">
+   <children>
+      <Label text="Počítač řádků II" VBox.vgrow="NEVER">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <HBox VBox.vgrow="ALWAYS">
+         <children>
+            <VBox maxWidth="210.0" minWidth="210.0" spacing="5.0" HBox.hgrow="NEVER">
+               <children>
+                  <GridPane VBox.vgrow="NEVER">
+                     <children>
+                        <Label text="Verze programu:" />
+                        <Label text="Datum vydání:" GridPane.rowIndex="1" />
+                        <Label text="1.1" GridPane.columnIndex="1" />
+                        <Label text="2014-08-15" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="117.0" minWidth="10.0" prefWidth="109.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="63.0" minWidth="10.0" prefWidth="44.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="28.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="28.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+                  <Label text="© Patrik Harag">
+                     <padding>
+                        <Insets top="20.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Label>
+                  <Label text="patrikharag@gmail.com" textFill="BLUE">
+                     <padding>
+                        <Insets top="-5.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </VBox>
+            <VBox styleClass="web-view-box" HBox.hgrow="ALWAYS">
+               <children>
+                  <WebView fx:id="webView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

@@ -7,33 +7,29 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Zprostředkuje analýzu souborů, zamezí opakované analýze stejného souboru.
  *
- * @version 2014-08-05
+ * @version 2014-08-11
  * @author Patrik Harag
  */
-public class FileStats implements IStats {
-    
-    private final Consumer<Path> analyzer;
-    private final Consumer<String> logConsumer;
+public abstract class FileStats implements IStats {
 
     private final Set<String> analyzed;
     
     // konstruktory
     
-    public FileStats(Consumer<Path> fileAnalyzer) {
-        this(fileAnalyzer, string -> {});
-    }
-    
-    public FileStats(Consumer<Path> fileAnalyzer, Consumer<String> logConsumer) {
-        this.analyzer = fileAnalyzer;
-        this.logConsumer = logConsumer;
+    public FileStats() {
         this.analyzed = new LinkedHashSet<>();
     }
 
+    // abstraktní metody
+    
+    protected abstract void consumeLog(String message);
+    
+    protected abstract void consumePath(Path path);
+    
     // metody
     
     @Override
@@ -52,9 +48,8 @@ public class FileStats implements IStats {
             try {
                 Files.walk(path).forEach(this::explorePath);
             } catch (IOException ex) {
-                logConsumer.accept(
-                        "Chyba při procházení souborového systému - " +
-                        path.toString());
+                consumeLog("Chyba při procházení souborového systému - "
+                        + path.toString());
             }
         }
     }
@@ -64,10 +59,10 @@ public class FileStats implements IStats {
         
         String stringPath = path.toString();
         if (analyzed.contains(stringPath)) {
-            logConsumer.accept("Duplikát - " + path.toString());
+            consumeLog("Duplikát - " + path.toString());
         } else {
             analyzed.add(stringPath);
-            analyzer.accept(path);
+            consumePath(path);
         }
     }
     

@@ -10,7 +10,7 @@ import cz.hartrik.code.analyze.FileType;
  * @version 2014-08-05
  * @author Patrik Harag
  */
-public class DataTypeSource extends DataTypeText {
+public class DataTypeCode extends DataTypeText {
 
     private int linesComment;
     private int linesEmpty;
@@ -18,22 +18,22 @@ public class DataTypeSource extends DataTypeText {
     private int charsComment;
     private int charsIndent;
     
-    public DataTypeSource(FileType fileType) {
+    public DataTypeCode(FileType fileType) {
         super(fileType);
     }
     
     public int getLinesComment() { return linesComment; }
     public int getLinesEmpty()   { return linesEmpty; }
     
-    public int getCharsIndent()     { return charsIndent; }
-    public int getCharsComment()    { return charsComment; }
+    public int getCharsIndent()  { return charsIndent; }
+    public int getCharsComment() { return charsComment; }
     
     // -- add
     
     public void addLinesEmpty(int lines)   { this.linesEmpty += lines; }
     public void addLinesComment(int lines) { this.linesComment += lines; }
     
-    public void addCharsIndent(int chars)     { this.charsIndent += chars; }
-    public void addCharsComment(int chars)    { this.charsComment += chars; }
+    public void addCharsIndent(int chars)  { this.charsIndent += chars; }
+    public void addCharsComment(int chars) { this.charsComment += chars; }
     
 }

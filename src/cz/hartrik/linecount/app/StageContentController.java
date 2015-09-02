@@ -2,63 +2,64 @@
 package cz.hartrik.linecount.app;
 
 import cz.hartrik.code.analyze.SimpleStringConsumer;
-import cz.hartrik.code.analyze.linecount.DataTypeSource;
+import cz.hartrik.code.analyze.linecount.DataTypeCode;
 import cz.hartrik.code.analyze.linecount.LineCountStats;
-import cz.hartrik.util.io.SimpleStringLoader;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
 
 /**
  * Controller
  * 
- * @version 2014-08-06
+ * @version 2014-08-14
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
 
+    public static final String PATH_PANEL_SUMMARY = "StagePanelSummary.fxml";
+    public static final String PATH_PANEL_ABOUT   = "StagePanelAbout.fxml";
+    
     @FXML private ToggleGroup toggleGroup;
     @FXML private HBox box;
-     @FXML private TableView<DataTypeSource> table; // 0
-     @FXML private TextArea logArea;                // 1
-     @FXML private VBox infoPanel;                  // 2
-      @FXML private WebView webView;
+     @FXML private TableView<DataTypeCode> table; // 0
+           private Node chartPanel;               // 1
+     @FXML private TextArea logArea;              // 2
+           private Node infoPanel;                // 3
 
     @FXML private TextArea inputArea;
 
+    protected StagePanelSummaryController chartPanelController;
+    
+    protected FilterManager filterManager = new FilterManager();
+    protected CustomOutputManager outputManager = new CustomOutputManager();
+    protected FileChooserManager fileChooserManager = new FileChooserManager();
+    
     // --- inicializace
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        SimpleFXMLLoader loader1 = new SimpleFXMLLoader(PATH_PANEL_SUMMARY);
+        chartPanelController = loader1.getController();
+        chartPanel = loader1.getRoot();
+        
+        SimpleFXMLLoader loader2 = new SimpleFXMLLoader(PATH_PANEL_ABOUT);
+        infoPanel = loader2.getRoot();
+        
         initDragAndDrop();
         initTable();
         initToggle();
         updatePanel();
-        
-        webView.getEngine().loadContent(SimpleStringLoader
-                .fromClassPath("/cz/hartrik/linecount/app/info.html"));
     }
 
     protected void initTable() {
@@ -115,11 +116,29 @@ public class StageContentController implements Initializable {
         
         ObservableList<Toggle> toggles = toggleGroup.getToggles();
         toggles.get(0).setUserData(table);
-        toggles.get(1).setUserData(logArea);
-        toggles.get(2).setUserData(infoPanel);
+        toggles.get(1).setUserData(chartPanel);
+        toggles.get(2).setUserData(logArea);
+        toggles.get(3).setUserData(infoPanel);
     }
     
     // --- metody
+    
+    @FXML protected void showFilterDialog() {
+        filterManager.showDialog(inputArea.getScene().getWindow());
+    }
+    
+    @FXML protected void clearInput() {
+        inputArea.clear();
+    }
+    
+    @FXML protected void showScriptDialog() {
+        outputManager.showOutputDialog(
+                inputArea.getScene().getWindow(), table.getItems());
+    }
+    
+    @FXML protected void showFileChooser() {
+        addFiles(fileChooserManager.showDialog(inputArea.getScene().getWindow()));
+    }
     
     @FXML protected void updatePanel() {
         box.getChildren().clear();
@@ -133,19 +152,28 @@ public class StageContentController implements Initializable {
         if (paths.isEmpty()) {
             table.getItems().clear();
             logArea.setText("");
+            chartPanelController.update(null);
             
         } else {
             final long startTime = System.currentTimeMillis();
             SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
-            LineCountStats lineCountStats = new LineCountStats(stringConsumer);
+            LineCountStats lineCountStats = new LineCountStats(
+                    filterManager.getPredicate(), stringConsumer);
             lineCountStats.analyze(paths);
             final long endTime = System.currentTimeMillis();
             
             stringConsumer.accept(
                     "--- výsledný čas: " + (endTime - startTime) + " ms");
             
-            table.getItems().setAll(lineCountStats.getStats().values());
+            Collection<DataTypeCode> values = lineCountStats.getStats().values();
+            List<DataTypeCode> list = values.stream()
+                    .sorted((t1, t2) -> t1.getFileType().getName()
+                            .compareTo(t2.getFileType().getName()))
+                    .collect(Collectors.toList());
+            
+            table.getItems().setAll(list);
             logArea.setText(stringConsumer.toString());
+            chartPanelController.update(list);
         }
     }
     
@@ -167,7 +195,8 @@ public class StageContentController implements Initializable {
     }
     
     public void addFiles(Collection<File> files) {
-        StringBuilder builder = new StringBuilder();
+        if (files == null || files.isEmpty()) return;
+        final StringBuilder builder = new StringBuilder();
 
         for (String path : getPaths())
             builder.append(path).append("\n");
