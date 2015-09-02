@@ -1,0 +1,15 @@
+/* 
+    Created on : 2.8.2014, 13:39:10
+    Author     : Patrik Harag
+*/
+
+.table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0, 1, 0;
+}
+
+.web-view-box {
+    -fx-border-color: #cccccc;
+    -fx-border-style: solid;
+    -fx-border-width: 1px 0px 1px 0px;
+}
