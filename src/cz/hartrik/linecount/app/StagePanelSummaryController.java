@@ -20,10 +20,10 @@ public class StagePanelSummaryController implements Initializable {
 
     @FXML private PieChart chartFiles;
     @FXML private PieChart chartLines;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {}
-    
+
     public void update(Collection<DataTypeCode> data) {
         if (data == null || data.isEmpty()) {
             chartFiles.getData().clear();
@@ -34,10 +34,10 @@ public class StagePanelSummaryController implements Initializable {
             updateChartFiles(chartFiles, data);
         }
     }
-    
+
     protected void updateChartLines(PieChart chart,
             Collection<DataTypeCode> data) {
-        
+
         chart.setData(data.stream()
                 .filter((DataTypeCode t) -> t.getLinesTotal() > 0)
                 .map((DataTypeCode t)
@@ -46,10 +46,10 @@ public class StagePanelSummaryController implements Initializable {
                 .collect(Collectors.toCollection(()
                         -> FXCollections.observableArrayList())));
     }
-    
+
     protected void updateChartFiles(PieChart chart,
             Collection<DataTypeCode> data) {
-        
+
         chart.setData(data.stream()
                 .filter((DataTypeCode t) -> t.getFiles() > 0)
                 .map((DataTypeCode t)
@@ -58,5 +58,5 @@ public class StagePanelSummaryController implements Initializable {
                 .collect(Collectors.toCollection(()
                         -> FXCollections.observableArrayList())));
     }
-    
+
 }

@@ -17,27 +17,27 @@ import java.util.Set;
 public abstract class FileStats implements IStats {
 
     private final Set<String> analyzed;
-    
+
     // konstruktory
-    
+
     public FileStats() {
         this.analyzed = new LinkedHashSet<>();
     }
 
     // abstraktní metody
-    
+
     protected abstract void consumeLog(String message);
-    
+
     protected abstract void consumePath(Path path);
-    
+
     // metody
-    
+
     @Override
     public void analyze(Path... paths) {
         if (paths.length != 0)
             analyze(Arrays.asList(paths));
     }
-    
+
     @Override
     public void analyze(Collection<Path> paths) {
         explore(paths);
@@ -56,7 +56,7 @@ public abstract class FileStats implements IStats {
 
     protected void explorePath(Path path) {
         path = path.toAbsolutePath();
-        
+
         String stringPath = path.toString();
         if (analyzed.contains(stringPath)) {
             consumeLog("Duplikát - " + path.toString());
@@ -65,7 +65,7 @@ public abstract class FileStats implements IStats {
             consumePath(path);
         }
     }
-    
+
     public Set<String> getAnalyzed() {
         return new LinkedHashSet<>(analyzed);
     }

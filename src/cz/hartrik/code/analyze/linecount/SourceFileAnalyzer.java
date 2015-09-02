@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Analyzuje zdrojový kód.
- * 
+ *
  * @version 2014-08-05
  * @author Patrik Harag
  */
@@ -19,13 +19,13 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeCode> {
 
     @Override
     public void analyze(Path path, DataTypeCode data) throws IOException {
-        
+
         StringBuilder builder = new StringBuilder();
-        
+
         Files.lines(path).forEach(line -> {
             final int length = line.length();
             builder.append(line).append('\n');
-            
+
             int comment = 0;
             int whitespace = 1;  // počítá se i \n
             int indent = 0; boolean isIndent = true;
@@ -37,31 +37,31 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeCode> {
 
                 } else {
                     isIndent = false;
-                    
+
                     if (comment == 0) {
                         comment = startWithComment(data, line, character);
                     }
                 }
             }
-            
+
             data.addCharsIndent(indent);
             data.addCharsTotal(length + 1); // počítá se i \n
             data.addCharsWhitespace(whitespace);
-            
+
             data.addLinesTotal(1);
             if ((whitespace - 1) == length) data.addLinesEmpty(1);
             if (comment == 1)               data.addLinesComment(1);
         });
-        
+
         finalizeComments(data, builder);
-        
+
         data.addFiles(1);
         data.addSizeTotal(Files.size(path));
     }
-    
+
     private int startWithComment(DataTypeCode data, String line,
             char character) {
-        
+
         CommentStyle cs = data.getFileType().getCommentStyle();
         Pair<String, String>[] comments = cs.getComments();
 
@@ -74,17 +74,17 @@ public class SourceFileAnalyzer implements IFileAnalyzer<DataTypeCode> {
         }
         return -1;
     }
-    
+
     private void finalizeComments(DataTypeCode data, StringBuilder builder) {
         CommentParser parser = new CommentParser(
                 data.getFileType().getCommentStyle());
         List<String> analyze = parser.analyze(builder.toString());
-        
+
         for (String string : analyze) {
             data.addLinesComment(
                     string.length() - string.replace("\n", "").length());
             data.addCharsComment(string.length());
         }
     }
-    
+
 }

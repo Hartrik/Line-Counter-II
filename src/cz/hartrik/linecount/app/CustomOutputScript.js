@@ -1,4 +1,4 @@
-// ArrayList<DataTypeCode> data
+/* global ArrayList<DataTypeCode> data */
 
 print("Typ | Soubory | Velikost | Řádky - kód | Řádky - komentáře "
         + "| Řádky - prázdné | Řádky - celkem | Znaky - komentáře "

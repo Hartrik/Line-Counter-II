@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 /**
  * Analyzuje textový soubor.
- * 
+ *
  * @version 2014-08-05
  * @author Patrik Harag
  */
@@ -15,7 +15,7 @@ public class TextFileAnalyzer implements IFileAnalyzer<DataTypeText> {
 
     @Override
     public void analyze(Path path, DataTypeText data) throws IOException {
-        
+
         Files.lines(path).forEach(line -> {
             data.addLinesTotal(1);
             data.addCharsTotal(line.length());
@@ -26,13 +26,13 @@ public class TextFileAnalyzer implements IFileAnalyzer<DataTypeText> {
         data.addFiles(1);
         data.addSizeTotal(Files.size(path));
     }
-    
+
     protected static int countWhitespace(String string) {
         int whitespace = 0;
         for (char character : string.toCharArray())
             if (Character.isWhitespace(character)) whitespace++;
-            
+
         return whitespace;
     }
-    
+
 }

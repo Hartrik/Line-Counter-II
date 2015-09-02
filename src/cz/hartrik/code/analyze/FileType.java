@@ -7,12 +7,12 @@ import java.util.Map;
 
 /**
  * Definuje podporované typy souborů.
- * 
+ *
  * @version 2014-08-14
  * @author Patrik Harag
  */
 public enum FileType {
-    
+
     C("C", CommentStyle.C_LIKE, "c", "ec", "pgc"),
     C_H("C/C++ Header", CommentStyle.C_LIKE, "H", "h", "hh", "hpp"),
     C_PP("C++", CommentStyle.C_LIKE, "C", "c++", "cc", "cpp", "cxx", "pcc"),
@@ -24,18 +24,18 @@ public enum FileType {
     PYTHON("Python", CommentStyle.PYTHON, "py", "python"),
     RUBY("Ruby", CommentStyle.RUBY, "rake", "rb"),
     VBS("VBScript", CommentStyle.VB, "vbs"),
-    
+
     TXT("Textové dokumenty", CommentStyle.NONE, true, false, "txt", "TXT"),
     OTHER("• Ostatní", CommentStyle.NONE, false, false, "*"),
-    
+
     // nové
-    
+
     XML("XML", CommentStyle.XML, "xml"),
     FXML("FXML", CommentStyle.XML, "fxml"),
     HTML("HTML", CommentStyle.XML, "html", "htm"),
-    
+
     CSS("CSS", CommentStyle.CSS, "css"),
-    
+
     KOTLIN("Kotlin", CommentStyle.C_LIKE, "kt"),
     JS("JavaScript", CommentStyle.C_LIKE, "js"),
     PHP("PHP", CommentStyle.PHP, "php"),
@@ -45,56 +45,56 @@ public enum FileType {
     CLOJURE("Clojure", CommentStyle.LISP, "clj"),
     ERLANG("Erlang", CommentStyle.ERLANG, "erl"),
     LUA("Lua", CommentStyle.LUA, "lua"),
-    
+
     PROPERTIES("Properties", CommentStyle.NONE, true, false, "properties"),
     ;
-    
+
     // vyhledávání
-    
+
     private static final Map<String, FileType> map = new HashMap<>();
     static {
         for (FileType type : FileType.values())
             for (String ext : type.getExtensions())
                 map.put(ext, type);
     }
-    
+
     public static FileType getByExtension(String extension) {
         if (extension == null || extension.isEmpty())
             return OTHER;
-        
+
         return map.getOrDefault(extension, OTHER);
     }
-    
+
     public static String[] getAllFileExtensions() {
         return map.keySet().toArray(new String[0]);
     }
-    
+
     // instance
-    
+
     private final String name;
     private final String[] extensions;
     private final CommentStyle commentStyle;
     private final boolean textDocument;
     private final boolean sourceCode;
-    
+
     @SafeVarargs
     private FileType(String name, CommentStyle commentStyle,
             String... extensions) {
-        
+
         this(name, commentStyle, true, true, extensions);
     }
-    
+
     @SafeVarargs
     private FileType(String name, CommentStyle commentStyle,
             boolean textDocument, boolean sourceCode, String... extensions) {
-        
+
         this.name = Checker.requireNonEmpty(name);
         this.extensions = Checker.requireNonEmpty(extensions);
         this.commentStyle = Checker.requireNonNull(commentStyle);
         this.textDocument = textDocument;
         this.sourceCode = sourceCode;
     }
-    
+
     public boolean containsExtension(String extension) {
         for (String string : extensions) {
             if (extension.equals(string))
@@ -102,7 +102,7 @@ public enum FileType {
         }
         return false;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -114,7 +114,7 @@ public enum FileType {
     public CommentStyle getCommentStyle() {
         return commentStyle;
     }
-    
+
     public boolean isSourceCode() {
         return sourceCode;
     }
@@ -122,5 +122,5 @@ public enum FileType {
     public boolean isTextDocument() {
         return textDocument;
     }
-    
+
 }

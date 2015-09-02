@@ -9,16 +9,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.hartrik.linecount.app.FilterDialogController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="190.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.hartrik.linecount.app.FilterDialogController">
    <stylesheets>
     <URL value="@Style.css" />
    </stylesheets>
    <children>
-      <VBox spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox spacing="10.0" VBox.vgrow="NEVER">
                <children>
-                  <Label styleClass="title-small" text="Regulární výraz:" />
+                  <Label styleClass="title-small" text="Regulární výraz:">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Label>
                   <TextField fx:id="tfRegex" text=".*">
                      <font>
                         <Font name="Courier New" size="14.0" />
@@ -27,12 +30,16 @@
                   <HBox spacing="20.0">
                      <children>
                         <Label text="Aplikovat na:" />
-                        <RadioButton mnemonicParsing="false" selected="true" text="Název">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="group1" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="rbAbsolutePath" mnemonicParsing="false" text="Absolutní cestu" toggleGroup="$group1" />
+                        <VBox spacing="10.0">
+                           <children>
+                              <RadioButton mnemonicParsing="false" selected="true" text="Název souboru">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="group1" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="rbAbsolutePath" mnemonicParsing="false" text="Absolutní cestu k souboru" toggleGroup="$group1" />
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                </children>

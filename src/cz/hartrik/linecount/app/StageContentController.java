@@ -4,6 +4,9 @@ package cz.hartrik.linecount.app;
 import cz.hartrik.code.analyze.SimpleStringConsumer;
 import cz.hartrik.code.analyze.linecount.DataTypeCode;
 import cz.hartrik.code.analyze.linecount.LineCountStats;
+import cz.hartrik.common.ui.javafx.DragAndDropInitializer;
+import cz.hartrik.common.ui.javafx.SimpleFXMLLoader;
+import cz.hartrik.common.ui.javafx.TableInitializer;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
@@ -15,21 +18,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 
 /**
  * Controller
- * 
- * @version 2014-08-14
+ *
+ * @version 2015-09-02
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
 
     public static final String PATH_PANEL_SUMMARY = "StagePanelSummary.fxml";
     public static final String PATH_PANEL_ABOUT   = "StagePanelAbout.fxml";
-    
+
     @FXML private ToggleGroup toggleGroup;
     @FXML private HBox box;
      @FXML private TableView<DataTypeCode> table; // 0
@@ -40,23 +42,24 @@ public class StageContentController implements Initializable {
     @FXML private TextArea inputArea;
 
     protected StagePanelSummaryController chartPanelController;
-    
+
     protected FilterManager filterManager = new FilterManager();
     protected CustomOutputManager outputManager = new CustomOutputManager();
     protected FileChooserManager fileChooserManager = new FileChooserManager();
-    
+
     // --- inicializace
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        SimpleFXMLLoader loader1 = new SimpleFXMLLoader(PATH_PANEL_SUMMARY);
+        SimpleFXMLLoader loader1 = new SimpleFXMLLoader(PATH_PANEL_SUMMARY, getClass());
         chartPanelController = loader1.getController();
         chartPanel = loader1.getRoot();
-        
-        SimpleFXMLLoader loader2 = new SimpleFXMLLoader(PATH_PANEL_ABOUT);
+
+        SimpleFXMLLoader loader2 = new SimpleFXMLLoader(PATH_PANEL_ABOUT, getClass());
         infoPanel = loader2.getRoot();
-        
-        initDragAndDrop();
+
+        DragAndDropInitializer.initFileDragAndDrop(inputArea, this::addPaths);
+
         initTable();
         initToggle();
         updatePanel();
@@ -76,75 +79,55 @@ public class StageContentController implements Initializable {
                 .addIntegerColumn("komentáře", v -> v.getLinesComment())
                 .addIntegerColumn("prázdné", v -> v.getLinesEmpty())
                 .addIntegerColumn("celkem", v -> v.getLinesTotal())
-                
+
             .addInnerColumn("Znaky")
                 .addIntegerColumn("komentáře", v -> v.getCharsComment())
-                .addIntegerColumn("ws - odsazení", v -> v.getCharsIndent())
-                .addIntegerColumn("ws - celkem", v -> v.getCharsWhitespace())
+                .addIntegerColumn("odsazení", v -> v.getCharsIndent())
+                .addIntegerColumn("whitespace", v -> v.getCharsWhitespace())
                 .addIntegerColumn("celkem", v -> v.getCharsTotal());
 
         // text při prázdné tabulce
         table.setPlaceholder(new Text("Žádné položky"));
     }
 
-    protected void initDragAndDrop() {
-        inputArea.setOnDragOver((DragEvent event) -> {
-            if (event.getDragboard().hasFiles())
-                event.acceptTransferModes(TransferMode.LINK);
-            else
-                event.consume();
-        });
-        
-        inputArea.setOnDragDropped((DragEvent event) -> {
-            Dragboard db = event.getDragboard();
-            boolean success = false;
-            if (db.hasFiles()) {
-                addFiles(db.getFiles());
-                success = true;
-            }
-            event.setDropCompleted(success);
-            event.consume();
-        });
-    }
-    
     protected void initToggle() {
         toggleGroup.selectedToggleProperty().addListener(
                 (ov, oldToggle, newToggle) -> {
                     if (newToggle == null) oldToggle.setSelected(true);
                     else updatePanel();
         });
-        
+
         ObservableList<Toggle> toggles = toggleGroup.getToggles();
         toggles.get(0).setUserData(table);
         toggles.get(1).setUserData(chartPanel);
         toggles.get(2).setUserData(logArea);
         toggles.get(3).setUserData(infoPanel);
     }
-    
+
     // --- metody
-    
+
     @FXML protected void showFilterDialog() {
         filterManager.showDialog(inputArea.getScene().getWindow());
     }
-    
+
     @FXML protected void clearInput() {
         inputArea.clear();
     }
-    
+
     @FXML protected void showScriptDialog() {
         outputManager.showOutputDialog(
                 inputArea.getScene().getWindow(), table.getItems());
     }
-    
+
     @FXML protected void showFileChooser() {
         addFiles(fileChooserManager.showDialog(inputArea.getScene().getWindow()));
     }
-    
+
     @FXML protected void updatePanel() {
         box.getChildren().clear();
         box.getChildren().add((Node) toggleGroup.getSelectedToggle().getUserData());
     }
-    
+
     @FXML protected void count() {
         List<Path> paths = getPaths().stream().map(path -> Paths.get(path))
                 .collect(Collectors.toList());
@@ -153,7 +136,7 @@ public class StageContentController implements Initializable {
             table.getItems().clear();
             logArea.setText("");
             chartPanelController.update(null);
-            
+
         } else {
             final long startTime = System.currentTimeMillis();
             SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
@@ -161,22 +144,22 @@ public class StageContentController implements Initializable {
                     filterManager.getPredicate(), stringConsumer);
             lineCountStats.analyze(paths);
             final long endTime = System.currentTimeMillis();
-            
+
             stringConsumer.accept(
                     "--- výsledný čas: " + (endTime - startTime) + " ms");
-            
+
             Collection<DataTypeCode> values = lineCountStats.getStats().values();
             List<DataTypeCode> list = values.stream()
                     .sorted((t1, t2) -> t1.getFileType().getName()
                             .compareTo(t2.getFileType().getName()))
                     .collect(Collectors.toList());
-            
+
             table.getItems().setAll(list);
             logArea.setText(stringConsumer.toString());
             chartPanelController.update(list);
         }
     }
-    
+
     public List<String> getPaths() {
         String current = inputArea.getText();
         if (current.trim().isEmpty())
@@ -193,7 +176,11 @@ public class StageContentController implements Initializable {
 
         return list;
     }
-    
+
+    public void addPaths(Collection<Path> files) {
+        addFiles(files.stream().map(Path::toFile).collect(Collectors.toList()));
+    }
+
     public void addFiles(Collection<File> files) {
         if (files == null || files.isEmpty()) return;
         final StringBuilder builder = new StringBuilder();
@@ -206,5 +193,5 @@ public class StageContentController implements Initializable {
 
         inputArea.setText(builder.toString());
     }
-    
+
 }

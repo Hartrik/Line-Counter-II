@@ -1,7 +1,6 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.util.io.SimpleStringLoader;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -17,13 +16,13 @@ import javafx.scene.web.WebView;
 public class StagePanelAboutController implements Initializable {
 
     public static final String PATH_ABOUT = "/cz/hartrik/linecount/app/about.html";
-    
+
     @FXML protected WebView webView;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        webView.getEngine().loadContent(
-                SimpleStringLoader.fromClassPath(PATH_ABOUT));
-    }    
-    
+        String contentUrl = getClass().getResource(PATH_ABOUT).toExternalForm();
+        webView.getEngine().load(contentUrl);
+    }
+
 }
