@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+    &lt;   represents <
+    &gt;   represents >
+    &amp;  represents &
+    &apos; represents '
+    &quot; represents "
+
+    Pořadí typů komentářů může mít vliv!
+-->
+
+<comment-styles>
+    <comment-style name="NONE" />
+
+    <comment-style name="C-LIKE">
+        <comment start="\/\*" end="\*\/" />   <!-- blokový komentář -->
+        <comment start="//" />                <!-- řádkový komentář -->
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="JAVA">
+        <comment start="(\/\*\*|\/\*)" end="\*\/" /> <!-- javadoc / blokový -->
+        <comment start="//" />                       <!-- řádkový komentář -->
+        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="[^\\]+&quot;"/>
+            <!-- je nutné dávat si pozor na tyto případy: '"', '\"' a "\""-->
+    </comment-style>
+
+    <comment-style name="PYTHON">
+        <comment start="#" />
+        <ignore start="&quot;&quot;&quot;" end="[^\\]+&quot;"/>
+        <ignore start="&quot;"             end="[^\\]+&quot;"/>
+        <ignore start="&amp;&amp;&amp;" end="[^\\]+&amp;"/>
+        <ignore start="&amp;"           end="[^\\]+&amp;"/>
+    </comment-style>
+
+    <comment-style name="PHP">
+        <comment start="#" />
+        <comment start="//" />
+        <comment start="\/\*" end="\*\/" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="RUBY">
+        <comment start="#" />
+        <comment start="=begin" end="=end" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="VB">
+        <comment start="&amp;" />
+        <comment start="(?i)REM " />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="PASCAL">
+        <comment start="//" />
+        <comment start="\(\*" end="\*\)" />
+        <comment start="\{" end="\}" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="XML">
+        <comment start="&lt;!--" end="--&gt;" />
+    </comment-style>
+
+    <comment-style name="CSS">
+        <comment start="\/\*" end="\*\/" />
+    </comment-style>
+
+    <comment-style name="LISP">
+        <comment start=";" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="ERLANG">
+        <comment start="%" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+    <comment-style name="LUA">
+        <comment start="--" />
+        <comment start="--\[\[" end="--\]\]" />
+        <!-- TODO: řetězce -->
+    </comment-style>
+
+</comment-styles>

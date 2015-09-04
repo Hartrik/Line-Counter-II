@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Pořadí může mít vliv! -->
+
+<file-types>
+
+    <!-- TEXTOVÉ SOUBORY, ZNAČKOVACÍ JAZYKY -->
+
+    <file-type name="Plain text" type="TEXT" comment-style="NONE">
+        <filter regex=".*\.(txt|TXT)$" />
+    </file-type>
+
+    <file-type name="Properties" type="TEXT" comment-style="NONE">
+        <filter regex=".*\.properties$" />
+    </file-type>
+
+    <file-type name="XML" type="SOURCE" comment-style="XML">
+        <filter regex=".*\.xml$" />
+    </file-type>
+
+    <file-type name="FXML" type="SOURCE" comment-style="XML">
+        <filter regex=".*\.fxml$" />
+    </file-type>
+
+    <file-type name="HTML" type="SOURCE" comment-style="XML">
+        <filter regex=".*\.html?$" />
+    </file-type>
+
+    <file-type name="CSS" type="SOURCE" comment-style="CSS">
+        <filter regex=".*\.css$" />
+    </file-type>
+
+    <!-- PROGRAMOVACÍ JAZYKY -->
+
+    <file-type name="C" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.c$" />
+    </file-type>
+
+    <file-type name="C++" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.(C|c++|cc|cpp|cxx|pcc)$" />
+    </file-type>
+
+    <file-type name="Objective-C" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.m$" />
+    </file-type>
+
+    <file-type name="C/C++ Header" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.(H|h|hh|hpp)$" />
+    </file-type>
+
+    <file-type name="C#" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.cs$" />
+    </file-type>
+
+    <file-type name="Java" type="SOURCE" comment-style="JAVA">
+        <filter regex=".*\.java$" />
+    </file-type>
+
+    <file-type name="JavaScript" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.js$" />
+    </file-type>
+
+    <file-type name="Groovy" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.groovy$" />
+    </file-type>
+
+    <file-type name="Scala" type="SOURCE" comment-style="C-LIKE">
+        <filter regex=".*\.scala$" />
+    </file-type>
+
+    <file-type name="Clojure" type="SOURCE" comment-style="LISP">
+        <filter regex=".*\.clj$" />
+    </file-type>
+
+    <file-type name="Lisp" type="SOURCE" comment-style="LISP">
+        <filter regex=".*\.cl$" />
+    </file-type>
+
+    <file-type name="Erlang" type="SOURCE" comment-style="ERLANG">
+        <filter regex=".*\.erl$" />
+    </file-type>
+
+    <file-type name="Ruby" type="SOURCE" comment-style="RUBY">
+        <filter regex=".*\.rb$" />
+    </file-type>
+
+    <file-type name="Pascal" type="SOURCE" comment-style="PASCAL">
+        <filter regex=".*\.(p|pas|dpr)$" />
+    </file-type>
+
+    <file-type name="Python" type="SOURCE" comment-style="PYTHON">
+        <filter regex=".*\.(py|python)$" />
+    </file-type>
+
+    <file-type name="Lua" type="SOURCE" comment-style="LUA">
+        <filter regex=".*\.lua$" />
+    </file-type>
+
+    <file-type name="PHP" type="SOURCE" comment-style="PHP">
+        <filter regex=".*\.php$" />
+    </file-type>
+
+    <file-type name="Visual Basic" type="SOURCE" comment-style="VB">
+        <filter regex=".*\.vb$" />
+    </file-type>
+
+    <file-type name="VBScript" type="SOURCE" comment-style="VB">
+        <filter regex=".*\.vbs$" />
+    </file-type>
+
+    <file-type name="VBA" type="SOURCE" comment-style="VB">
+        <filter regex=".*\.vba$" />
+    </file-type>
+
+</file-types>

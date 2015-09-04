@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Analyzuje zdrojový kód.
  *
- * @version 2015-09-02
+ * @version 2015-09-04
  * @author Patrik Harag
  */
 public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
@@ -44,7 +46,7 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
                     isIndent = false;
 
                     if (comment == 0) {
-                        comment = startWithComment(data, line, character);
+                        comment = (startsWithComment(data, line)) ? 1 : -1;
                     }
                 }
             }
@@ -64,20 +66,15 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
         data.addSizeTotal(Files.size(path));
     }
 
-    private int startWithComment(DataTypeCode data, String line,
-            char character) {
-
+    private boolean startsWithComment(DataTypeCode data, String line) {
         CommentStyle cs = data.getFileType().getCommentStyle();
-        Pair<String, String>[] comments = cs.getComments();
 
-        for (Pair<String, String> pair : comments) {
-            if (pair.getFirst().charAt(0) == character
-                    && line.contains(pair.getFirst())) {
-
-                return 1;
-            }
+        for (Pair<Pattern, Pattern> commentPattern : cs.getCommentPatterns()) {
+            Matcher matcher = commentPattern.getFirst().matcher(line);
+            if (matcher.find() && matcher.start() == 0)
+                return true;
         }
-        return -1;
+        return false;
     }
 
     private void finalizeComments(DataTypeCode data, StringBuilder builder) {

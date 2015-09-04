@@ -1,7 +1,6 @@
 
 package cz.hartrik.linecount.analyze;
 
-import cz.hartrik.common.io.NioUtil;
 import cz.hartrik.linecount.analyze.supported.FileTypes;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -10,13 +9,14 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  *
- * @version 2015-09-02
+ * @version 2015-09-04
  * @author Patrik Harag
  */
 public class LineCountProvider extends FileAnalyzeProvider {
@@ -56,11 +56,13 @@ public class LineCountProvider extends FileAnalyzeProvider {
                 return;
             }
 
-            String extension = NioUtil.getExtension(path);
-            FileType type = FileTypes.getByExtension(extension);
+            String fileName = path.getFileName().toString();
+            Optional<FileType> found = FileTypes.find(fileName);
 
-            if (type == FileTypes.OTHER)
+            if (!found.isPresent())
                 logConsumer.accept("Soubor neznámého typu - " + path.toString());
+
+            FileType type = found.orElse(FileTypes.OTHER);
 
             DataTypeCode typeData = getData(type);
             chooseFileAnalyzer(path, typeData);

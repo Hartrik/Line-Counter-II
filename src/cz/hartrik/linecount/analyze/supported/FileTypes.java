@@ -1,133 +1,61 @@
 package cz.hartrik.linecount.analyze.supported;
 
-import cz.hartrik.common.Checker;
-import cz.hartrik.linecount.analyze.CommentStyle;
+import cz.hartrik.common.Exceptions;
 import cz.hartrik.linecount.analyze.FileType;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
- * Definuje podporované typy souborů.
+ * Spravuje podporované typy souborů.
  *
- * @version 2015-09-02
+ * @version 2015-09-04
  * @author Patrik Harag
  */
-public enum FileTypes implements FileType {
+public class FileTypes {
 
-    C("C", CommentStyles.C_LIKE, "c", "ec", "pgc"),
-    C_H("C/C++ Header", CommentStyles.C_LIKE, "H", "h", "hh", "hpp"),
-    C_PP("C++", CommentStyles.C_LIKE, "C", "c++", "cc", "cpp", "cxx", "pcc"),
-    C_SHARP("C#", CommentStyles.C_LIKE, "cs"),
-    SCALA("Scala", CommentStyles.C_LIKE, "scala"),
-    GROOVY("Groovy", CommentStyles.C_LIKE, "groovy"),
-    JAVA("Java", CommentStyles.JAVA, "java"),
-    PASCAL("Pascal", CommentStyles.PASCAL, "dpr", "p", "pas"),
-    PYTHON("Python", CommentStyles.PYTHON, "py", "python"),
-    RUBY("Ruby", CommentStyles.RUBY, "rake", "rb"),
-    VBS("VBScript", CommentStyles.VB, "vbs"),
+    private FileTypes() { }
 
-    TXT("Plain text", CommentStyles.NONE, true, false, "txt", "TXT"),
-    OTHER("• Ostatní", CommentStyles.NONE, false, false, "*"),
+    static final String DEFAULT_FILE_TYPES_NAME = "file types.xml";
 
-    // nové
+    public static final FileType OTHER = new FileTypeImpl(
+            "<?>", DataType.UNKNOWN, CommentStyles.NONE,
+            Collections.singletonList((s) -> true));
 
-    XML("XML", CommentStyles.XML, "xml"),
-    FXML("FXML", CommentStyles.XML, "fxml"),
-    HTML("HTML", CommentStyles.XML, "html", "htm"),
+                                                      // ordered
+    private static final Set<FileType> fileTypes = new LinkedHashSet<>();
 
-    CSS("CSS", CommentStyles.CSS, "css"),
-
-    KOTLIN("Kotlin", CommentStyles.C_LIKE, "kt"),
-    JS("JavaScript", CommentStyles.C_LIKE, "js"),
-    PHP("PHP", CommentStyles.PHP, "php"),
-    OBJECTIVE_C("Objective-C", CommentStyles.C_LIKE, "m"),
-    VB("Visual Basic", CommentStyles.VB, "vb"),
-    LISP("Lisp", CommentStyles.LISP, "lisp", "cl"),
-    CLOJURE("Clojure", CommentStyles.LISP, "clj"),
-    ERLANG("Erlang", CommentStyles.ERLANG, "erl"),
-    LUA("Lua", CommentStyles.LUA, "lua"),
-
-    PROPERTIES("Properties", CommentStyles.NONE, true, false, "properties"),
-    ;
-
-    // vyhledávání
-
-    private static final Map<String, FileType> map = new HashMap<>();
-    static {
-        for (FileType type : values())
-            for (String ext : type.getExtensions())
-                map.put(ext, type);
+    /**
+     * Načte výchozí, vestavěné typy souborů.
+     */
+    public static void initDefaultFileTypes() {
+        initFileType(FileTypes.class.getResourceAsStream(DEFAULT_FILE_TYPES_NAME));
     }
 
-    public static FileType getByExtension(String extension) {
-        if (extension == null || extension.isEmpty())
-            return OTHER;
+    public static void initFileType(InputStream in) {
+        Exceptions.unchecked(() -> {
+            FileTypesXMLParser parser = new FileTypesXMLParser(
+                    CommentStyles::getByName);
 
-        return map.getOrDefault(extension, OTHER);
+            parser.parse(in).stream().forEach(fileTypes::add);
+        });
     }
 
-    public static String[] getAllFileExtensions() {
-        return map.keySet().toArray(new String[0]);
+    public static Optional<FileType> find(String fileName) {
+        return fileTypes.stream()
+                .filter(type -> type.matches(fileName))
+                .findFirst();
     }
 
-    // instance
-
-    private final String name;
-    private final String[] extensions;
-    private final CommentStyle commentStyle;
-    private final boolean textDocument;
-    private final boolean sourceCode;
-
-    @SafeVarargs
-    private FileTypes(String name, CommentStyle commentStyle,
-            String... extensions) {
-
-        this(name, commentStyle, true, true, extensions);
-    }
-
-    @SafeVarargs
-    private FileTypes(String name, CommentStyle commentStyle,
-            boolean textDocument, boolean sourceCode, String... extensions) {
-
-        this.name = Checker.requireNonEmpty(name);
-        this.extensions = Checker.requireNonEmpty(extensions);
-        this.commentStyle = Checker.requireNonNull(commentStyle);
-        this.textDocument = textDocument;
-        this.sourceCode = sourceCode;
-    }
-
-    @Override
-    public boolean containsExtension(String extension) {
-        for (String string : extensions) {
-            if (extension.equals(string))
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String[] getExtensions() {
-        return extensions;
-    }
-
-    @Override
-    public CommentStyle getCommentStyle() {
-        return commentStyle;
-    }
-
-    @Override
-    public boolean isSourceCode() {
-        return sourceCode;
-    }
-
-    @Override
-    public boolean isTextDocument() {
-        return textDocument;
+    /**
+     * Vrátí neměnnou množinu všech typů souborů.
+     *
+     * @return typy souborů
+     */
+    public static Set<FileType> getFileTypes() {
+        return Collections.unmodifiableSet(fileTypes);
     }
 
 }

@@ -2,21 +2,25 @@
 package cz.hartrik.linecount.analyze;
 
 import cz.hartrik.common.Pair;
+import cz.hartrik.common.Streams;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parsuje komentáře ze zdrojového kódu.
  *
- * @version 2014-08-05
+ * @version 2015-09-03
  * @author Patrik Harag
  */
 public class CommentParser {
 
-    protected final Pair<String, String>[] comments;
-    private final int numberOfComments;
+    private final Pair<Pattern, Pattern>[] comments;
+    private final Pair<Pattern, Pattern>[] ignore;
 
-    protected boolean isContinue;
+    private boolean isContinue;
 
     /**
      * Vytvoří novou instanci.
@@ -24,8 +28,8 @@ public class CommentParser {
      * @param commentStyle typ komentářů
      */
     public CommentParser(CommentStyle commentStyle) {
-        this.comments = commentStyle.getComments();
-        this.numberOfComments = comments.length;
+        this.comments = commentStyle.getCommentPatterns();
+        this.ignore = commentStyle.getIgnorePatterns();
     }
 
     /**
@@ -51,48 +55,68 @@ public class CommentParser {
         List<String> content = new ArrayList<>();
 
         while (true) {
-            final int[] next = getNext(source);
+            final SearchResult nextComment = getNextStart(source, comments, 0);
+            final SearchResult nextIgnore = getNextStart(source, ignore, 0);
 
-            if (next[0] > -1) {
-                final Pair<String, String> comment = comments[next[1]];
-                source.delete(0, next[0] + comment.getFirst().length());
+            if (nextComment != null) {
 
-                int secondPos = source.indexOf(comment.getSecond());
-                int to = secondPos == -1 ? source.length() : secondPos;
+                // ! ošetřit situaci, když jsou stejně "blízko"
+                //    - např. mohou mít stejný začátek
 
-                content.add(source.substring(0, to));
-                source.delete(0, secondPos == -1 ? to
-                        : to + comment.getSecond().length());
+                if (nextIgnore != null && nextIgnore.start < nextComment.start) {
+                    // komentář je ignorován - např. uvnitř řetězce
 
-                if (secondPos == -1 && !comment.getSecond().equals("\n")) {
-                    // konec zdrojáku, ale blokový komentář pokračuje dál
-                    this.isContinue = true;
-                    return content;
+                    // hledání konce oblasti, ve které jsou ignorovány komentáře
+                    Matcher m = nextIgnore.pair.getSecond().matcher(source);
+                    if (m.find(nextIgnore.end))
+                        source.delete(0, m.end());
+                    else
+                        return content;  // ignorováno až do konce
+
+                } else {
+
+                    // nalezení konce komentáře
+                    Matcher m = nextComment.pair.getSecond().matcher(source);
+                    if (m.find(nextComment.end)) {
+                        content.add(source.substring(nextComment.end, m.start()));
+                        source.delete(0, m.end());
+
+                    } else {
+                        // komentář až do konce
+                        isContinue = true;
+
+                        content.add(source.substring(nextComment.end));
+                        return content;
+                    }
                 }
             } else {
-                // nenalezeny komentáře
+                // nenalezeny další komentáře
                 return content;
             }
         }
     }
 
-    private int[] getNext(StringBuilder source) {
-        int[] indexOf = new int[numberOfComments];
+    /**
+     * Vrátí nejbližší výskyt
+     *
+     * @param source
+     * @param patterns
+     * @param start
+     * @return
+     */
+    protected SearchResult getNextStart(
+            StringBuilder source, Pair<Pattern, Pattern>[] patterns, int start) {
 
-        for (int i = 0; i < numberOfComments; i++)
-            indexOf[i] = source.indexOf(comments[i].getFirst());
-
-        int min = Integer.MAX_VALUE; int minIndex = -1;
-
-        for (int i = 0; i < numberOfComments; i++) {
-            int next = indexOf[i];
-            if (next != -1 && next < min) {
-                min = next;
-                minIndex = i;
-                if (next == 0) break; // nejlepší možný výsledek
-            }
-        }
-        return new int[] { minIndex == -1 ? -1 : min, minIndex };
+        return Streams.stream(patterns)
+                .map(commentType -> {
+                    Matcher m = commentType.getFirst().matcher(source);
+                    return (m.find(start))
+                            ? new SearchResult(m.start(), m.end(), commentType)
+                            : null;
+                })
+                .filter(Objects::nonNull)
+                .min((r1, r2) -> Integer.compare(r1.start, r2.start))
+                    .orElse(null);
     }
 
     /**
@@ -103,6 +127,17 @@ public class CommentParser {
      */
     public boolean isContinue() {
         return isContinue;
+    }
+
+    protected static class SearchResult {
+        protected SearchResult(int start, int end, Pair<Pattern, Pattern> pair) {
+            this.start = start;
+            this.end = end;
+            this.pair = pair;
+        }
+
+        protected final int start, end;
+        protected final Pair<Pattern, Pattern> pair;
     }
 
 }

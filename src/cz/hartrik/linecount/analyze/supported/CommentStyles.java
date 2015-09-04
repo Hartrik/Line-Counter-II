@@ -1,52 +1,70 @@
 package cz.hartrik.linecount.analyze.supported;
 
-import cz.hartrik.common.Pair;
+import cz.hartrik.common.Exceptions;
 import cz.hartrik.linecount.analyze.CommentStyle;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Definuje různé styly zapisování komentářů.
+ * Spravuje podporované styly zapisování komentářů.
  *
- * @version 2015-09-02
+ * @version 2015-09-04
  * @author Patrik Harag
  */
-public enum CommentStyles implements CommentStyle {
+public class CommentStyles {
 
-    // pořadí parametrů může mít vliv!
-    //  - pokud řetězce začínají stejně (/*, /**)
+    private CommentStyles() { }
 
-    NONE(),
+    static final String DEFAULT_STYLES_FILE_NAME = "comment styles.xml";
 
-    C_LIKE(pair("//", "\n"), pair("/*", "*/")),
-    JAVA(pair("//", "\n"), pair("/**", "*/"), pair("/*", "*/")),
-    PYTHON(pair("#", "\n"), pair("'''", "'''")),
-    RUBY(pair("#", "\n"), pair("=begin", "=end")),
-    VB(pair("'", "\n"), pair("REM ", "\n"), pair("Rem ", "\n"), pair("rem ", "\n")),
-    PASCAL(pair("//", "\n"), pair("(*", "*)"), pair("{", "}")),
+    /** Žádné komentáře. */
+    public static final CommentStyle NONE = new CommentStyleImpl(
+            "NONE", Collections.emptyList(), Collections.emptyList());
 
-    XML(pair("<!--", "-->")),
-    CSS(pair("/*", "*/")),
-    PHP(pair("#", "\n"), pair("//", "\n"), pair("/*", "*/")),
-    LISP(pair(";;;;", "\n"), pair(";;;", "\n"), pair(";;", "\n"), pair(";", "\n")),
-    ERLANG(pair("%", "\n")),
-    LUA(pair("--[[", "--]]"), pair("--", "\n")),
-    ;
+    private static final Map<String, CommentStyle> styles = new LinkedHashMap<>();
 
-    @SafeVarargs
-    private CommentStyles(Pair<String, String>... commentTypes) {
-        this.comments = commentTypes;
+    /**
+     * Načte výchozí, vestavěné styly komentářů.
+     */
+    public static void initDefaultStyles() {
+        initStyles(CommentStyles.class.getResourceAsStream(DEFAULT_STYLES_FILE_NAME));
     }
 
-    private final Pair<String, String>[] comments;
+    /**
+     * Načte nové styly komentářů. Pokud bude mít některý z nových stylů stejný
+     * název, jako některý z aktuálních, aktuální styl se přepíše.
+     *
+     * @param in vstupní proud obsahující validní XML
+     */
+    public static void initStyles(InputStream in) {
+        Exceptions.unchecked(() -> {
+            CommentStylesXMLParser parser = new CommentStylesXMLParser();
 
-    @Override
-    public Pair<String, String>[] getComments() {
-        return comments;
+            parser.parse(in).stream()
+                    .forEach(style -> styles.put(style.getName(), style));
+        });
     }
 
-    // StringPair
+    /**
+     * Vrátí styl komentářů podle jména. Case sensitive!
+     *
+     * @param name název stylu komentářů
+     * @return styl komentářů, {@link null}, pokud není nalezen
+     */
+    public static CommentStyle getByName(String name) {
+        return styles.get(name);
+    }
 
-    private static Pair<String, String> pair(String s1, String s2) {
-        return Pair.ofNonNull(s1, s2);
+    /**
+     * Vrátí neměnný slovník všech stylů komentářů.
+     * Klíčem ve slovníku je název.
+     *
+     * @return styly komentářů
+     */
+    public static Map<String, CommentStyle> getStyles() {
+        return Collections.unmodifiableMap(styles);
     }
 
 }

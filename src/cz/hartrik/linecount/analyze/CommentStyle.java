@@ -2,6 +2,7 @@
 package cz.hartrik.linecount.analyze;
 
 import cz.hartrik.common.Pair;
+import java.util.regex.Pattern;
 
 /**
  * Rozhraní pro styl zapisování komentářů.
@@ -11,11 +12,10 @@ import cz.hartrik.common.Pair;
  */
 public interface CommentStyle {
 
-    /**
-     * Vrátí pole, které obsahuje všechny typy komentářů.
-     *
-     * @return pole s páry, které obsahují otevírající a uzavírající sekvence
-     */
-    public Pair<String, String>[] getComments();
+    public Pair<Pattern, Pattern>[] getCommentPatterns();
+
+    public Pair<Pattern, Pattern>[] getIgnorePatterns();
+
+    public String getName();
 
 }

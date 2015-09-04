@@ -1,6 +1,8 @@
 
 package cz.hartrik.linecount.app;
 
+import cz.hartrik.linecount.analyze.supported.CommentStyles;
+import cz.hartrik.linecount.analyze.supported.FileTypes;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,6 +23,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        CommentStyles.initDefaultStyles();
+        FileTypes.initDefaultFileTypes();
+
         Parent root = FXMLLoader.load(getClass().getResource(FILE_FXML));
         Scene scene = new Scene(root);
 
