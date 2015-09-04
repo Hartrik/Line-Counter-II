@@ -186,14 +186,4 @@ public class CommentParserTest {
         assertTrue(out.size() == 1);
     }
 
-    @Test
-    public void testIgnore_7() {
-        List<String> out = parser.analyze(
-                "\" str = \\\"q\\\" str \"    \"\\\"\"  \"\"// escape");
-        //       "  str = \"q\"     str  "     "\""       ""// escape
-
-        assertTrue(out.size() == 1);
-        assertEquals(" escape", out.get(0));
-    }
-
 }

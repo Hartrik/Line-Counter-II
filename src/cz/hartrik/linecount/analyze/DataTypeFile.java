@@ -4,7 +4,7 @@ package cz.hartrik.linecount.analyze;
 /**
  * Objekt shromažďující data o typu souboru.
  *
- * @version 2014-08-05
+ * @version 2015-09-04
  * @author Patrik Harag
  */
 public class DataTypeFile {
@@ -27,5 +27,12 @@ public class DataTypeFile {
 
     public void addSizeTotal(long size) { this.size += size; }
     public void addFiles(int files)     { this.files += files; }
+
+    // Object
+
+    @Override
+    public String toString() {
+        return String.format("Data/File[files=%d, size=%d]", files, size);
+    }
 
 }

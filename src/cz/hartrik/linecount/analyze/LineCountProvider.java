@@ -56,13 +56,7 @@ public class LineCountProvider extends FileAnalyzeProvider {
                 return;
             }
 
-            String fileName = path.getFileName().toString();
-            Optional<FileType> found = FileTypes.find(fileName);
-
-            if (!found.isPresent())
-                logConsumer.accept("Soubor neznámého typu - " + path.toString());
-
-            FileType type = found.orElse(FileTypes.OTHER);
+            FileType type = getFileType(path);
 
             DataTypeCode typeData = getData(type);
             chooseFileAnalyzer(path, typeData);
@@ -73,6 +67,19 @@ public class LineCountProvider extends FileAnalyzeProvider {
             logConsumer.accept(
                     "Neexistující složka/soubor - " + path.toString());
         }
+    }
+
+    protected FileType getFileType(Path path) {
+        String fileName = path.getFileName().toString();
+
+        Optional<FileType> found = (fileName.contains("."))
+                ? FileTypes.find(fileName)
+                : Optional.empty();
+
+        if (!found.isPresent())
+            logConsumer.accept("Soubor neznámého typu - " + path.toString());
+
+        return found.orElse(FileTypes.OTHER);
     }
 
     // metody

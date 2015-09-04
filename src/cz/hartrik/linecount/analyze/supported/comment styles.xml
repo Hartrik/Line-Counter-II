@@ -14,50 +14,63 @@
     <comment-style name="NONE" />
 
     <comment-style name="C-LIKE">
-        <comment start="\/\*" end="\*\/" />   <!-- blokový komentář -->
-        <comment start="//" />                <!-- řádkový komentář -->
-        <!-- TODO: řetězce -->
+        <comment start="\/\*" end="\*\/" />
+        <comment start="//" />
+        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)"/>
+            <!-- bere v úvahu tyto případy: '"', '\"' a "\""-->
     </comment-style>
 
     <comment-style name="JAVA">
-        <comment start="(\/\*\*|\/\*)" end="\*\/" /> <!-- javadoc / blokový -->
-        <comment start="//" />                       <!-- řádkový komentář -->
-        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="[^\\]+&quot;"/>
-            <!-- je nutné dávat si pozor na tyto případy: '"', '\"' a "\""-->
+        <comment start="(\/\*\*|\/\*)" end="\*\/" />
+        <comment start="//" />
+        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)"/>
+    </comment-style>
+
+    <comment-style name="JS">
+        <comment start="\/\*" end="\*\/" />
+        <comment start="//" />
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)"/>
+            <!-- TODO: ještě existuje literár pro regex -->
     </comment-style>
 
     <comment-style name="PYTHON">
         <comment start="#" />
-        <ignore start="&quot;&quot;&quot;" end="[^\\]+&quot;"/>
-        <ignore start="&quot;"             end="[^\\]+&quot;"/>
-        <ignore start="&amp;&amp;&amp;" end="[^\\]+&amp;"/>
-        <ignore start="&amp;"           end="[^\\]+&amp;"/>
+        <ignore start="&quot;{3}" end="([^\\]&quot;{3}|^&quot;{3})"/>
+        <ignore start="&quot;"    end="([^\\]&quot;|^&quot;)"/>
+        <ignore start="&apos;{3}" end="([^\\]&apos;{3}|^&apos;{3})"/>
+        <ignore start="&apos;"    end="([^\\]&apos;|^&apos;)"/>
     </comment-style>
 
     <comment-style name="PHP">
         <comment start="#" />
         <comment start="//" />
         <comment start="\/\*" end="\*\/" />
-        <!-- TODO: řetězce -->
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)"/>
+            <!-- TODO: <<<EOT -->
     </comment-style>
 
     <comment-style name="RUBY">
         <comment start="#" />
         <comment start="=begin" end="=end" />
-        <!-- TODO: řetězce -->
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
+            <!-- TODO: multiline, literály -->
     </comment-style>
 
     <comment-style name="VB">
-        <comment start="&amp;" />
-        <comment start="(?i)REM " />
-        <!-- TODO: řetězce -->
+        <comment start="&apos;" />
+        <comment start="(?i)REM " /> <!-- TODO -->
+        <ignore start="&quot;" end="&quot;"/> <!-- """" = "-->
     </comment-style>
 
     <comment-style name="PASCAL">
         <comment start="//" />
         <comment start="\(\*" end="\*\)" />
         <comment start="\{" end="\}" />
-        <!-- TODO: řetězce -->
+        <ignore start="&quot;" end="&quot;"/>
+        <ignore start="&apos;" end="&apos;"/>
+            <!-- """" = ", '''' = ' -->
     </comment-style>
 
     <comment-style name="XML">
@@ -70,7 +83,8 @@
 
     <comment-style name="LISP">
         <comment start=";" />
-        <!-- TODO: řetězce -->
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
+            <!-- TODO -->
     </comment-style>
 
     <comment-style name="ERLANG">

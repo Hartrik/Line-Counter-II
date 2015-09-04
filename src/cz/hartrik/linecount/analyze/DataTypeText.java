@@ -4,7 +4,7 @@ package cz.hartrik.linecount.analyze;
 /**
  * Objekt shromažďující data o souboru textového typu.
  *
- * @version 2014-08-05
+ * @version 2015-09-04
  * @author Patrik Harag
  */
 public class DataTypeText extends DataTypeFile {
@@ -31,5 +31,13 @@ public class DataTypeText extends DataTypeFile {
 
     public void addCharsTotal(int chars)      { this.charsTotal += chars; }
     public void addCharsWhitespace(int chars) { this.charsWS += chars; }
+
+    // Object
+
+    @Override
+    public String toString() {
+        return String.format("Data/Text[files=%d, size=%d, lines=%d, chars=%d, ws=%d]",
+                getFiles(), getSizeTotal(), linesTotal, charsTotal, charsWS);
+    }
 
 }

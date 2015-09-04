@@ -33,7 +33,6 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
             final int length = line.length();
             builder.append(line).append('\n');
 
-            int comment = 0;
             int whitespace = 1;  // počítá se i \n
             int indent = 0; boolean isIndent = true;
 
@@ -44,10 +43,6 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
 
                 } else {
                     isIndent = false;
-
-                    if (comment == 0) {
-                        comment = (startsWithComment(data, line)) ? 1 : -1;
-                    }
                 }
             }
 
@@ -56,8 +51,8 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
             data.addCharsWhitespace(whitespace);
 
             data.addLinesTotal(1);
+            if (startsWithComment(data, line)) data.addLinesComment(1);
             if ((whitespace - 1) == length) data.addLinesEmpty(1);
-            if (comment == 1)               data.addLinesComment(1);
         });
 
         finalizeComments(data, builder);
@@ -71,9 +66,12 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
 
         for (Pair<Pattern, Pattern> commentPattern : cs.getCommentPatterns()) {
             Matcher matcher = commentPattern.getFirst().matcher(line);
-            if (matcher.find() && matcher.start() == 0)
-                return true;
+            if (matcher.find()) {
+                if (line.substring(0, matcher.start()).trim().isEmpty())
+                    return true;
+            }
         }
+
         return false;
     }
 

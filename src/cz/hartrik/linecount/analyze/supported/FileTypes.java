@@ -3,10 +3,7 @@ package cz.hartrik.linecount.analyze.supported;
 import cz.hartrik.common.Exceptions;
 import cz.hartrik.linecount.analyze.FileType;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Spravuje podporované typy souborů.
@@ -24,8 +21,7 @@ public class FileTypes {
             "<?>", DataType.UNKNOWN, CommentStyles.NONE,
             Collections.singletonList((s) -> true));
 
-                                                      // ordered
-    private static final Set<FileType> fileTypes = new LinkedHashSet<>();
+    private static final Map<String, FileType> fileTypes = new LinkedHashMap<>();
 
     /**
      * Načte výchozí, vestavěné typy souborů.
@@ -39,23 +35,29 @@ public class FileTypes {
             FileTypesXMLParser parser = new FileTypesXMLParser(
                     CommentStyles::getByName);
 
-            parser.parse(in).stream().forEach(fileTypes::add);
+            parser.parse(in).stream()
+                    .forEach(f -> fileTypes.put(f.getName(), f));
         });
     }
 
     public static Optional<FileType> find(String fileName) {
-        return fileTypes.stream()
+        return fileTypes.values().stream()
                 .filter(type -> type.matches(fileName))
                 .findFirst();
     }
 
+    public static FileType getByName(String fileName) {
+        return fileTypes.get(fileName);
+    }
+
     /**
-     * Vrátí neměnnou množinu všech typů souborů.
+     * Vrátí neměnný slovník všech typů souborů.
+     * Klíčem ve slovníku je název.
      *
      * @return typy souborů
      */
-    public static Set<FileType> getFileTypes() {
-        return Collections.unmodifiableSet(fileTypes);
+    public static Map<String, FileType> getFileTypes() {
+        return Collections.unmodifiableMap(fileTypes);
     }
 
 }

@@ -56,7 +56,7 @@
         <filter regex=".*\.java$" />
     </file-type>
 
-    <file-type name="JavaScript" type="SOURCE" comment-style="C-LIKE">
+    <file-type name="JavaScript" type="SOURCE" comment-style="JS">
         <filter regex=".*\.js$" />
     </file-type>
 

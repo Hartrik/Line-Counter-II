@@ -1,0 +1,15 @@
+/* comment1 */
+
+.table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0, 1, 0; /* comment2 */
+}
+
+.web-view-box {
+    -fx-border-color: #cccccc; /*com
+m
+ent3*/
+
+    -fx-border-style: solid;
+    -fx-border-width:/* comment4 */1px 0px 1px 0px;
+}
