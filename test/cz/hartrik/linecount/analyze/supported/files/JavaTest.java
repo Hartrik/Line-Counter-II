@@ -1,4 +1,4 @@
-package cz.hartrik.linecount.analyze.supported;
+package cz.hartrik.linecount.analyze.supported.files;
 
 /** comment1 */
 public class JavaTest {
