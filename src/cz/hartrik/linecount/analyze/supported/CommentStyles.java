@@ -20,7 +20,7 @@ public class CommentStyles {
     static final String DEFAULT_STYLES_FILE_NAME = "comment styles.xml";
 
     /** Žádné komentáře. */
-    public static final CommentStyle NONE = new CommentStyleImpl(
+    public static final CommentStyle NONE = CommentStyle.of(
             "NONE", Collections.emptyList(), Collections.emptyList());
 
     private static final Map<String, CommentStyle> styles = new LinkedHashMap<>();

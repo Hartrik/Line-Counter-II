@@ -2,6 +2,7 @@ package cz.hartrik.linecount.analyze.supported;
 
 import cz.hartrik.common.Exceptions;
 import cz.hartrik.linecount.analyze.FileType;
+import cz.hartrik.linecount.analyze.FileType.DataType;
 import java.io.InputStream;
 import java.util.*;
 
@@ -17,7 +18,7 @@ public class FileTypes {
 
     static final String DEFAULT_FILE_TYPES_NAME = "file types.xml";
 
-    public static final FileType OTHER = new FileTypeImpl(
+    public static final FileType OTHER = FileType.of(
             "<?>", DataType.UNKNOWN, CommentStyles.NONE,
             Collections.singletonList((s) -> true));
 

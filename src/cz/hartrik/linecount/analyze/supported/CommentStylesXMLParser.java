@@ -4,36 +4,36 @@ import cz.hartrik.common.Pair;
 import cz.hartrik.linecount.analyze.CommentStyle;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * @version 2015-09-04
+ * @version 2015-09-05
  * @author Patrik Harag
  */
-public class CommentStylesXMLParser {
+public class CommentStylesXMLParser extends XMLParserBase {
 
-    public static final String TAG_ROOT = "comment-styles";
-    public static final String TAG_COMMENT_STYLE = "comment-style";
-    public static final String TAG_COMMENT = "comment";
-    public static final String TAG_IGNORE = "ignore";
+    public static final URL XSD_URL =
+            CommentStylesXMLParser.class.getResource("comment styles.xsd");
 
-    public static final String ARGUMENT_STYLE_NAME = "name";
-    public static final String ARGUMENT_COMMENT_START = "start";
-    public static final String ARGUMENT_COMMENT_END = "end";
+    static final String TAG_ROOT = "comment-styles";
+    static final String TAG_COMMENT_STYLE = "comment-style";
+    static final String TAG_COMMENT = "comment";
+    static final String TAG_IGNORE = "ignore";
 
-    public static final String ARGUMENT_COMMENT_END_DEF = "(?m)$";
+    static final String ARGUMENT_STYLE_NAME = "name";
+
+    static final String ARGUMENT_REGEX_START = "start";
+    static final String ARGUMENT_REGEX_END = "end";
+    static final String ARGUMENT_REGEX_END_DEF = "(?m)$";
 
     /**
      * Načte styly komentářů z XML souboru. Předpokládá správně formátovaný
@@ -44,19 +44,16 @@ public class CommentStylesXMLParser {
      * @throws IOException
      * @throws SAXException
      * @throws ParserConfigurationException
+     * @throws JAXBException
      */
     public List<CommentStyle> parse(InputStream inputStream)
-            throws IOException, SAXException, ParserConfigurationException {
+            throws IOException, SAXException, JAXBException,
+                   ParserConfigurationException {
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document document = dBuilder.parse(inputStream);
-        document.getDocumentElement().normalize();
+        Element dcElement = loadXMLDocument(inputStream).getDocumentElement();
+        validateXMLSchema(XSD_URL, dcElement);
 
-        Element documentElement = document.getDocumentElement();
-        NodeList list = documentElement.getElementsByTagName(TAG_COMMENT_STYLE);
-
-        return createStream(list)
+        return createStream(dcElement.getElementsByTagName(TAG_COMMENT_STYLE))
                 .map(this::parseCommentStyle)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -76,24 +73,17 @@ public class CommentStylesXMLParser {
                 .map(this::parseRegexPair)
                 .collect(Collectors.toList());
 
-        return new CommentStyleImpl(name, commentTypes, ignored);
+        return CommentStyle.of(name, commentTypes, ignored);
     }
 
     protected Pair<Pattern, Pattern> parseRegexPair(Element element) {
-        String start = element.getAttribute(ARGUMENT_COMMENT_START);
-        String end = element.getAttribute(ARGUMENT_COMMENT_END);
+        String start = element.getAttribute(ARGUMENT_REGEX_START);
+        String end = element.getAttribute(ARGUMENT_REGEX_END);
 
         if (end.isEmpty())
-            end = ARGUMENT_COMMENT_END_DEF;
+            end = ARGUMENT_REGEX_END_DEF;
 
         return Pair.of(Pattern.compile(start), Pattern.compile(end));
-    }
-
-    // pomocné metody
-
-    private Stream<Element> createStream(NodeList elements) {
-        return IntStream.range(0, elements.getLength())
-                .mapToObj(i -> (Element) elements.item(i));
     }
 
 }

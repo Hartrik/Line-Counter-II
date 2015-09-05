@@ -1,23 +1,22 @@
-package cz.hartrik.linecount.analyze.supported;
+package cz.hartrik.linecount.analyze;
 
-import cz.hartrik.linecount.analyze.CommentStyle;
-import cz.hartrik.linecount.analyze.FileType;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * @version 2015-09-04
+ *
+ * @version 2015-09-05
  * @author Patrik Harag
  */
-public class FileTypeImpl implements FileType {
+class FileTypeImpl implements FileType {
 
     private final String name;
     private final DataType dataType;
     private final CommentStyle commentStyle;
     private final List<Predicate<String>> filters;
 
-    public FileTypeImpl(String name, DataType dataType,
+    FileTypeImpl(String name, DataType dataType,
             CommentStyle commentStyle, List<Predicate<String>> filters) {
 
         this.name = name;

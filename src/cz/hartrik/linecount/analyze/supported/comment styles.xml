@@ -68,7 +68,7 @@
     </comment-style>
 
     <comment-style name="CSS">
-        <comment start="\/\*" end="\*\/" />
+        <comment start="/\*" end="\*/" />
     </comment-style>
 
     <comment-style name="LISP">

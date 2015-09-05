@@ -2,37 +2,40 @@ package cz.hartrik.linecount.analyze.supported;
 
 import cz.hartrik.linecount.analyze.CommentStyle;
 import cz.hartrik.linecount.analyze.FileType;
+import cz.hartrik.linecount.analyze.FileType.DataType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * @version 2015-09-04
+ * Slouží k parsování podporovaných typů souborů z XML dokumentu.
+ *
+ * @version 2015-09-05
  * @author Patrik Harag
  */
-public class FileTypesXMLParser {
+public class FileTypesXMLParser extends XMLParserBase {
 
-    public static final String TAG_ROOT = "file-types";
-    public static final String TAG_FILE_TYPE = "file-type";
-    public static final String ARGUMENT_FT_NAME = "name";
-    public static final String ARGUMENT_FT_TYPE = "type";
-    public static final String ARGUMENT_FT_COMMENT_STYLE = "comment-style";
+    public static final URL XSD_URL =
+            CommentStylesXMLParser.class.getResource("file types.xsd");
 
-    public static final String TAG_FILE_TYPE_FILTER = "filter";
-    public static final String ARGUMENT_FT_FILTER_REGEX = "regex";
+    static final String TAG_ROOT = "file-types";
+    static final String TAG_FILE_TYPE = "file-type";
+    static final String ARGUMENT_FT_NAME = "name";
+    static final String ARGUMENT_FT_TYPE = "type";
+    static final String ARGUMENT_FT_COMMENT_STYLE = "comment-style";
+
+    static final String TAG_FILE_TYPE_FILTER = "filter";
+    static final String ARGUMENT_FT_FILTER_REGEX = "regex";
 
     private final Function<String, CommentStyle> commentStylesSupplier;
 
@@ -47,20 +50,17 @@ public class FileTypesXMLParser {
      * @return typy souborů
      * @throws IOException
      * @throws SAXException
+     * @throws JAXBException
      * @throws ParserConfigurationException
      */
     public List<FileType> parse(InputStream inputStream)
-            throws IOException, SAXException, ParserConfigurationException {
+            throws IOException, SAXException, JAXBException,
+                   ParserConfigurationException {
 
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document document = dBuilder.parse(inputStream);
-        document.getDocumentElement().normalize();
+        Element docElement = loadXMLDocument(inputStream).getDocumentElement();
+        validateXMLSchema(XSD_URL, docElement);
 
-        Element documentElement = document.getDocumentElement();
-        NodeList list = documentElement.getElementsByTagName(TAG_FILE_TYPE);
-
-        return createStream(list)
+        return createStream(docElement.getElementsByTagName(TAG_FILE_TYPE))
                 .map(this::parseFileType)
                 .collect(Collectors.toList());
     }
@@ -79,7 +79,7 @@ public class FileTypesXMLParser {
                 .map(this::parseFilter)
                 .collect(Collectors.toList());
 
-        return new FileTypeImpl(aName, type, commentStyle, filters);
+        return FileType.of(aName, type, commentStyle, filters);
     }
 
     protected DataType parseDataType(String string) {
@@ -105,15 +105,8 @@ public class FileTypesXMLParser {
     protected Predicate<String> parseFilter(Element element) {
         String regex = element.getAttribute(ARGUMENT_FT_FILTER_REGEX);
 
-        Pattern pattern = Pattern.compile(regex);
+        final Pattern pattern = Pattern.compile(regex);
         return (fileName) -> pattern.matcher(fileName).matches();
-    }
-
-    // pomocné metody
-
-    private Stream<Element> createStream(NodeList elements) {
-        return IntStream.range(0, elements.getLength())
-                .mapToObj(i -> (Element) elements.item(i));
     }
 
 }

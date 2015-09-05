@@ -1,29 +1,38 @@
-package cz.hartrik.linecount.analyze.supported;
+package cz.hartrik.linecount.analyze;
 
 import cz.hartrik.common.Pair;
-import cz.hartrik.linecount.analyze.CommentStyle;
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * @version 2015-09-04
+ *
+ * @version 2015-09-05
  * @author Patrik Harag
  */
-public class CommentStyleImpl implements CommentStyle {
+class CommentStyleImpl implements CommentStyle {
 
     private final String name;
     private final Pair<Pattern, Pattern>[] commentPatterns;
     private final Pair<Pattern, Pattern>[] ignorePatterns;
 
-    public CommentStyleImpl(
+    CommentStyleImpl(
             String name,
             List<Pair<Pattern, Pattern>> commentPatterns,
             List<Pair<Pattern, Pattern>> ignorePatterns) {
 
+        this(name, toArray(commentPatterns), toArray(ignorePatterns));
+    }
+
+    CommentStyleImpl(
+            String name,
+            Pair<Pattern, Pattern>[] commentPatterns,
+            Pair<Pattern, Pattern>[] ignorePatterns) {
+
         this.name = name;
-        this.commentPatterns = commentPatterns.stream().toArray(this::createArray);
-        this.ignorePatterns = ignorePatterns.stream().toArray(this::createArray);
+        this.commentPatterns = commentPatterns;
+        this.ignorePatterns = ignorePatterns;
     }
 
     @Override
@@ -41,8 +50,16 @@ public class CommentStyleImpl implements CommentStyle {
         return ignorePatterns;
     }
 
+    // pomocné statické metody
+
+    private static Pair<Pattern, Pattern>[] toArray(
+            Collection<Pair<Pattern, Pattern>> coll) {
+
+        return coll.stream().toArray(CommentStyleImpl::createArray);
+    }
+
     @SuppressWarnings("unchecked")
-    private Pair<Pattern, Pattern>[] createArray(int size) {
+    private static Pair<Pattern, Pattern>[] createArray(int size) {
         return (Pair<Pattern, Pattern>[]) Array.newInstance(Pair.class, size);
     }
 
