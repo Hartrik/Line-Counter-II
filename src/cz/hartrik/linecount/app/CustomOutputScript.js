@@ -1,29 +1,33 @@
-/* global ArrayList<DataTypeCode> data */
+/* global List<DataTypeCode> data */
 
-print("Typ | Soubory | Velikost | Řádky - kód | Řádky - komentáře "
-        + "| Řádky - prázdné | Řádky - celkem | Znaky - komentáře "
-        + "| Znaky - odsazení | Znaky - ws | Znaky - celkem |");
+data.forEach(function(type) {
+    var fileType = type.getFileType();
 
-function countCode(type) {
-    if (type.getFileType().isSourceCode())
-        return type.getLinesTotal()
-                - (type.getLinesComment() + type.getLinesEmpty());
-    else return 0;
-}
+    if (fileType.isTextDocument())
+        print(fileType.getName() + " - " + type.getLinesTotal());
+});
 
-for each (var type in data) {
-    print(type.getFileType().getName()  + " | "
-            + type.getFiles()           + " | "
-            + type.getSizeTotal()       + " | "
 
-            + countCode(type)           + " | "
-            + type.getLinesComment()    + " | "
-            + type.getLinesEmpty()      + " | "
-            + type.getLinesTotal()      + " | "
-
-            + type.getCharsComment()    + " | "
-            + type.getCharsIndent()     + " | "
-            + type.getCharsWhitespace() + " | "
-            + type.getCharsTotal()      + " | "
-    );
-}
+/*
+ * Useful methods:
+ * ====================================
+ * DataTypeCode type = ...
+ *
+ * type.getFileType().name()
+ * type.getFileType().isTextDocument()
+ * type.getFileType().isSourceCode()
+ *
+ * type.getFiles()
+ * type.getSizeTotal()
+ *
+ * type.getLinesCode()
+ * type.getLinesComment()
+ * type.getLinesEmpty()
+ * type.getLinesTotal()
+ *
+ * type.getCharsComment()
+ * type.getCharsIndent()
+ * type.getCharsWhitespace()
+ * type.getCharsTotal()
+ *
+ */

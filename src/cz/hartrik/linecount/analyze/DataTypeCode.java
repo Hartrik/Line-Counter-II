@@ -5,11 +5,12 @@ package cz.hartrik.linecount.analyze;
  * Objekt shromažďující data o zdrojových souborech napsaných v určitém
  * programovacím jazyce.
  *
- * @version 2015-09-04
+ * @version 2015-09-06
  * @author Patrik Harag
  */
 public class DataTypeCode extends DataTypeText {
 
+    private int linesCode;
     private int linesComment;
     private int linesEmpty;
 
@@ -22,6 +23,7 @@ public class DataTypeCode extends DataTypeText {
 
     // --- get
 
+    public int getLinesCode()    { return linesCode; }
     public int getLinesComment() { return linesComment; }
     public int getLinesEmpty()   { return linesEmpty; }
 
@@ -30,6 +32,7 @@ public class DataTypeCode extends DataTypeText {
 
     // --- add
 
+    public void addLinesCode(int lines)    { this.linesCode += lines; }
     public void addLinesEmpty(int lines)   { this.linesEmpty += lines; }
     public void addLinesComment(int lines) { this.linesComment += lines; }
 
@@ -42,10 +45,10 @@ public class DataTypeCode extends DataTypeText {
     public String toString() {
         return String.format(
                   "Data/Text[files=%d, size=%d, "
-                + "lines=%d, lines/comment=%d, lines/empty=%d, "
+                + "lines=%d, lines/code=%d, lines/comment=%d, lines/empty=%d, "
                 + "chars=%d, chars/ws=%d, chars/comment=%d, chars/indent=%d]",
                 getFiles(), getSizeTotal(),
-                getLinesTotal(), getLinesComment(), getLinesEmpty(),
+                getLinesTotal(), getLinesCode(), getLinesComment(), getLinesEmpty(),
                 getCharsTotal(), getCharsWhitespace(), getCharsComment(), getCharsIndent());
     }
 

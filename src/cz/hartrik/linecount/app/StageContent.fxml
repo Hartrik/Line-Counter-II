@@ -44,35 +44,12 @@
                         <Insets />
                      </VBox.margin>
                   </ToolBar>
-                  <HBox fx:id="box" VBox.vgrow="ALWAYS">
-                     <children>
-                        <TableView fx:id="table" HBox.hgrow="ALWAYS">
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                           <HBox.margin>
-                              <Insets bottom="-1.0" left="-1.0" right="-2.0" top="-1.0" />
-                           </HBox.margin>
-                        </TableView>
-                        <TextArea fx:id="logArea" HBox.hgrow="ALWAYS">
-                           <font>
-                              <Font name="Courier New" size="12.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </HBox.margin>
-                        </TextArea>
-                     </children>
-                  </HBox>
+                  <HBox fx:id="box" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <HBox spacing="5.0">
                <children>
-                  <TextArea fx:id="inputArea" promptText="Nové položky můžete přidat také přetažením" HBox.hgrow="ALWAYS">
-                     <font>
-                        <Font name="Courier New" size="14.0" />
-                     </font>
-                  </TextArea>
+                  <TextArea fx:id="inputArea" promptText="Nové položky můžete přidat také přetažením" HBox.hgrow="ALWAYS" />
                   <VBox spacing="5.0" HBox.hgrow="NEVER">
                      <children>
                         <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#showFileChooser">
