@@ -1,38 +1,59 @@
 
 package cz.hartrik.linecount.analyze;
 
+import cz.hartrik.common.Exceptions;
 import cz.hartrik.common.Pair;
-import java.io.IOException;
+import cz.hartrik.linecount.analyze.load.TextLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Analyzuje zdrojový kód.
  *
- * @version 2015-09-06
+ * @version 2015-09-07
  * @author Patrik Harag
  */
 public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
 
+    static final Function<FileType, DataTypeCode> DEFAULT_DATA_PROVIDER
+            = DataTypeCode::new;
+
     @Override
-    public DataTypeCode analyze(Path file, FileType fileType) throws IOException {
-        DataTypeCode data = new DataTypeCode(fileType);
-        analyze(file, data);
-        return data;
+    public DataTypeCode analyze(Path file, FileType type, TextLoader loader) {
+        return analyze(file, type, loader, DEFAULT_DATA_PROVIDER);
     }
 
     @Override
-    public void analyze(Path path, DataTypeCode data) throws IOException {
-        final int defaultLines = data.getLinesTotal();
-        final int defaultLinesEmpty = data.getLinesEmpty();
-        final int defaultLinesComment = data.getLinesComment();
+    public <U extends DataTypeCode> U analyze(Path file, FileType type,
+            TextLoader loader, Function<FileType, U> dataProvider) {
 
+        U data = dataProvider.apply(type);
+        StringBuilder builder;
+
+        try (Stream<String> lines = loader.load(file)) {
+            builder = readLines(lines, data);
+        }
+
+        finalizeComments(data, builder);
+
+        data.addLinesCode(data.getLinesTotal() - data.getLinesEmpty()
+                - data.getLinesComment());
+
+        data.addSizeTotal(Exceptions.uncheckedApply(Files::size, file));
+        data.addFiles(1);
+
+        return data;
+    }
+
+    private StringBuilder readLines(Stream<String> lines, DataTypeCode data) {
         StringBuilder builder = new StringBuilder();
 
-        Files.lines(path).forEach(line -> {
+        lines.forEach(line -> {
             final int length = line.length();
             builder.append(line).append('\n');
 
@@ -61,15 +82,7 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
                 data.addLinesComment(1);
         });
 
-        finalizeComments(data, builder);
-
-        data.addLinesCode(
-                (data.getLinesTotal() - defaultLines)
-                - (data.getLinesEmpty() - defaultLinesEmpty)
-                - (data.getLinesComment() - defaultLinesComment));
-
-        data.addSizeTotal(Files.size(path));
-        data.addFiles(1);
+        return builder;
     }
 
     private boolean startsWithComment(DataTypeCode data, String line) {

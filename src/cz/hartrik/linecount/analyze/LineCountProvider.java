@@ -1,9 +1,8 @@
 
 package cz.hartrik.linecount.analyze;
 
+import cz.hartrik.linecount.analyze.load.TextLoaders;
 import cz.hartrik.linecount.analyze.supported.FileTypes;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -16,7 +15,7 @@ import java.util.function.Predicate;
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  *
- * @version 2015-09-04
+ * @version 2015-09-07
  * @author Patrik Harag
  */
 public class LineCountProvider extends FileAnalyzeProvider {
@@ -57,9 +56,8 @@ public class LineCountProvider extends FileAnalyzeProvider {
             }
 
             FileType type = getFileType(path);
-
             DataTypeCode typeData = getData(type);
-            chooseFileAnalyzer(path, typeData);
+            doAnalysis(path, typeData);
 
         } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 
@@ -84,22 +82,48 @@ public class LineCountProvider extends FileAnalyzeProvider {
 
     // metody
 
-    protected void chooseFileAnalyzer(Path path, DataTypeCode typeData) {
-        FileType fileType = typeData.getFileType();
+    protected void doAnalysis(Path path, DataTypeCode typeData) {
+        final FileType fileType = typeData.getFileType();
+
+        @SuppressWarnings("unchecked")
+        final FileAnalyzer<DataTypeFile> analyzer =
+                (FileAnalyzer<DataTypeFile>) getAnalyzer(fileType);
 
         try {
-            if (fileType.isSourceCode())
-                sourceFileAnalyzer.analyze(path, typeData);
-            else if (fileType.isTextDocument())
-                textFileAnalyzer.analyze(path, typeData);
-            else
-                unknownFileAnalyzer.analyze(path, typeData);
+            Optional<DataTypeCode> o = TextLoaders.getDefaultGuessLoader().load(
+                    (l) -> analyzer.analyze(path, fileType, l, DataTypeCode::new));
 
-        } catch (UncheckedIOException e) {
-            logConsumer.accept("Nepodporované kódování - " + path.toString());
-        } catch (IOException e) {
+            if (o.isPresent()) {
+                DataTypeCode data = o.get();
+
+                typeData.addFiles(data.getFiles());
+                typeData.addSizeTotal(data.getSizeTotal());
+
+                typeData.addLinesTotal(data.getLinesTotal());
+                typeData.addLinesCode(data.getLinesCode());
+                typeData.addLinesComment(data.getLinesComment());
+                typeData.addLinesEmpty(data.getLinesEmpty());
+
+                typeData.addCharsTotal(data.getCharsTotal());
+                typeData.addCharsIndent(data.getCharsIndent());
+                typeData.addCharsComment(data.getCharsComment());
+                typeData.addCharsWhitespace(data.getCharsWhitespace());
+
+            } else {
+                logConsumer.accept("Nepodporované kódování - " + path.toString());
+            }
+        } catch (Exception e) {
             logConsumer.accept("Chyba při čtení souboru - " + path.toString());
         }
+    }
+
+    protected FileAnalyzer<? extends DataTypeFile> getAnalyzer(FileType type) {
+        if (type.isSourceCode())
+            return sourceFileAnalyzer;
+        else if (type.isTextDocument())
+            return textFileAnalyzer;
+        else
+            return unknownFileAnalyzer;
     }
 
     protected DataTypeCode getData(FileType type) {

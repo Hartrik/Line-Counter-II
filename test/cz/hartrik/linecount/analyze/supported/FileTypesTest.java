@@ -2,6 +2,7 @@ package cz.hartrik.linecount.analyze.supported;
 
 import cz.hartrik.linecount.analyze.DataTypeCode;
 import cz.hartrik.linecount.analyze.SourceCodeAnalyzer;
+import cz.hartrik.linecount.analyze.load.TextLoaders;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +17,7 @@ import static org.junit.Assert.*;
  * Testovací zdrojové kódy mají komentáře o délce 10 znaků a odsazení dlouhé
  * 4 znaky.
  *
- * @version 2015-09-05
+ * @version 2015-09-07
  * @author Patrik Harag
  */
 public class FileTypesTest {
@@ -32,11 +33,18 @@ public class FileTypesTest {
                 .resolve("test/cz/hartrik/linecount/analyze/supported/files/");
     }
 
+    private static DataTypeCode analyze(String fileName, String lang) {
+        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
+
+        return analyzer.analyze(
+                folder.resolve(fileName),
+                FileTypes.getByName(lang),
+                TextLoaders.standardTextLoader("UTF-8"));
+    }
+
     @Test
     public void testJava() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("JavaTest.java"), FileTypes.getByName("Java"));
+        DataTypeCode data = analyze("JavaTest.java", "Java");
 
         assertThat(data.getLinesTotal(), equalTo(25));
         assertThat(data.getLinesEmpty(), equalTo(6));
@@ -48,9 +56,7 @@ public class FileTypesTest {
 
     @Test
     public void testPython() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("Python test.py"), FileTypes.getByName("Python"));
+        DataTypeCode data = analyze("Python test.py", "Python");
 
         assertThat(data.getLinesTotal(), equalTo(25));
         assertThat(data.getLinesEmpty(), equalTo(5));
@@ -62,9 +68,7 @@ public class FileTypesTest {
 
     @Test
     public void testCSS() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("CSS test.css"), FileTypes.getByName("CSS"));
+        DataTypeCode data = analyze("CSS test.css", "CSS");
 
         assertThat(data.getLinesTotal(), equalTo(15));
         assertThat(data.getLinesEmpty(), equalTo(3));
@@ -76,10 +80,7 @@ public class FileTypesTest {
 
     @Test
     public void testJS() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("JavaScript test.js"),
-                FileTypes.getByName("JavaScript"));
+        DataTypeCode data = analyze("JavaScript test.js", "JavaScript");
 
         assertThat(data.getLinesTotal(), equalTo(24));
         assertThat(data.getLinesEmpty(), equalTo(6));
@@ -91,9 +92,7 @@ public class FileTypesTest {
 
     @Test
     public void testPHP() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("PHP test.php"), FileTypes.getByName("PHP"));
+        DataTypeCode data = analyze("PHP test.php", "PHP");
 
         assertThat(data.getLinesTotal(), equalTo(22));
         assertThat(data.getLinesEmpty(), equalTo(6));
@@ -105,9 +104,7 @@ public class FileTypesTest {
 
     @Test
     public void testPascal() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("Pascal test.pas"), FileTypes.getByName("Pascal"));
+        DataTypeCode data = analyze("Pascal test.pas", "Pascal");
 
         assertThat(data.getLinesTotal(), equalTo(25));
         assertThat(data.getLinesEmpty(), equalTo(8));
@@ -119,10 +116,7 @@ public class FileTypesTest {
 
     @Test
     public void testVBScript() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("VBScript test.vbs"),
-                FileTypes.getByName("VBScript"));
+        DataTypeCode data = analyze("VBScript test.vbs", "VBScript");
 
         assertThat(data.getLinesTotal(), equalTo(26));
         assertThat(data.getLinesEmpty(), equalTo(10));
@@ -134,9 +128,7 @@ public class FileTypesTest {
 
     @Test
     public void testCSharp() throws IOException {
-        SourceCodeAnalyzer analyzer = new SourceCodeAnalyzer();
-        DataTypeCode data = analyzer.analyze(
-                folder.resolve("C Sharp test.cs"), FileTypes.getByName("C#"));
+        DataTypeCode data = analyze("C Sharp test.cs", "C#");
 
         assertThat(data.getLinesTotal(), equalTo(22));
         assertThat(data.getLinesEmpty(), equalTo(6));
