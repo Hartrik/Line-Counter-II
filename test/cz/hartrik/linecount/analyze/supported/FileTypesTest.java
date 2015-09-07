@@ -46,7 +46,7 @@ public class FileTypesTest {
     public void testJava() throws IOException {
         DataTypeCode data = analyze("JavaTest.java", "Java");
 
-        assertThat(data.getLinesTotal(), equalTo(25));
+        assertThat(data.getLinesTotal(), equalTo(26));
         assertThat(data.getLinesEmpty(), equalTo(6));
         assertThat(data.getLinesComment(), equalTo(5));
 
@@ -82,8 +82,8 @@ public class FileTypesTest {
     public void testJS() throws IOException {
         DataTypeCode data = analyze("JavaScript test.js", "JavaScript");
 
-        assertThat(data.getLinesTotal(), equalTo(24));
-        assertThat(data.getLinesEmpty(), equalTo(6));
+        assertThat(data.getLinesTotal(), equalTo(25));
+        assertThat(data.getLinesEmpty(), equalTo(7));
         assertThat(data.getLinesComment(), equalTo(3));
 
         assertThat(data.getCharsIndent(), equalTo(6 * 4));

@@ -1,6 +1,7 @@
 package cz.hartrik.linecount.analyze.supported.files;
 
 /** comment1 */
+@org.junit.Ignore
 public class JavaTest {
 
     public static void main(String[] args) {

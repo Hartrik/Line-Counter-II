@@ -100,15 +100,52 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
     }
 
     private void finalizeComments(DataTypeCode data, StringBuilder builder) {
-        CommentParser parser = new CommentParser(
-                data.getFileType().getCommentStyle());
-        List<String> analyze = parser.analyze(builder.toString());
+        CommentStyle commentStyle = data.getFileType().getCommentStyle();
+        CommentParser parser = new CommentParser(commentStyle);
 
-        for (String string : analyze) {
-            data.addLinesComment(
-                    string.length() - string.replace("\n", "").length());
-            data.addCharsComment(string.length());
+        List<String> comments = parser.analyze(builder.toString());
+
+        for (String comment : comments) {
+            data.addLinesComment(countLinesInComment(comment));
+            data.addCharsComment(comment.length());
         }
+    }
+
+    private int countLinesInComment(String comment) {
+        if (comment.isEmpty()) return 0;
+
+        final String[] arrayOfLines = comment.split("\n");
+        final int length = arrayOfLines.length;
+
+        if (length == 0) {
+            return 0;  // to by se stát nemělo
+
+        } else if (length == 1) {
+            return 0;  // jednořádkový komentář, pokud jím řádka začínala,
+                       // již je započínaý
+        } else {
+            int lines = 1;  // poslední řádka začná komentářem a není prázdná
+                            // (kvůli sekvenci, která ukončuje komentář)
+
+            for (int i = 1; i < length - 1; i++)
+                if (!isBlank(arrayOfLines[i]))
+                    lines++;
+
+            return lines;
+        }
+    }
+
+    private static boolean isBlank(String str) {
+        int length = str.length();
+
+        if (length == 0)
+            return true;
+
+        for (int i = 0; i < length; i++)
+            if ((Character.isWhitespace(str.charAt(i)) == false))
+                return false;
+
+        return true;
     }
 
 }

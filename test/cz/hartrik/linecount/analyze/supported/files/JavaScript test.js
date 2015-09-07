@@ -12,7 +12,8 @@ var sum = function() {
 
 var number = 42; /*co
 mm
-ent4*/
+
+ent*/
 
 var s1 = "string /* this is not comment */";  // comment 5
 var s2 = " // this is not comment ' \" ";     // comment 6
