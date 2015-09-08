@@ -10,7 +10,6 @@
         <filter regex=".*\.(txt|TXT)$" />
     </file-type>
 
-    <!-- TODO:  -->
     <file-type name="Properties" type="TEXT" comment-style="NONE">
         <filter regex=".*\.properties$" />
     </file-type>

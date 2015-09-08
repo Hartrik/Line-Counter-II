@@ -25,8 +25,8 @@
                      <children>
                         <Label text="Verze programu:" />
                         <Label text="Datum vydání:" GridPane.rowIndex="1" />
-                        <Label text="1.1" GridPane.columnIndex="1" />
-                        <Label text="2014-08-15" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="1.2" GridPane.columnIndex="1" />
+                        <Label text="2015-09-08" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="117.0" minWidth="10.0" prefWidth="109.0" />
