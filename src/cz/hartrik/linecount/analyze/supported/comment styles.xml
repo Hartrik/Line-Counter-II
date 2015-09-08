@@ -13,56 +13,6 @@
 <comment-styles>
     <comment-style name="NONE" />
 
-    <comment-style name="C-LIKE">
-        <comment start="/\*" end="\*/" />
-        <comment start="//" />
-        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)"/>
-            <!-- bere v úvahu tyto případy: '"', '\"' a "\""-->
-    </comment-style>
-
-    <comment-style name="JAVA">
-        <comment start="(/\*\*|/\*)" end="\*/" />
-        <comment start="//" />
-        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)"/>
-    </comment-style>
-
-    <comment-style name="JS">
-        <comment start="/\*" end="\*/" />
-        <comment start="//" />
-        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
-        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)"/>
-        <ignore start="[^/&quot;&apos;]/[^/*]" end="[^\\]/"/> <!-- regex -->
-    </comment-style>
-
-    <comment-style name="PYTHON">
-        <comment start="#" />
-        <ignore start="&quot;{3}" end="([^\\]&quot;{3}|^&quot;{3})"/>
-        <ignore start="&quot;"    end="([^\\]&quot;|^&quot;)"/>
-        <ignore start="&apos;{3}" end="([^\\]&apos;{3}|^&apos;{3})"/>
-        <ignore start="&apos;"    end="([^\\]&apos;|^&apos;)"/>
-    </comment-style>
-
-    <comment-style name="PHP">
-        <comment start="#" />
-        <comment start="//" />
-        <comment start="/\*" end="\*/" />
-        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
-        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)"/>
-    </comment-style>
-
-    <comment-style name="VB">
-        <comment start="&apos;" />
-        <comment start="(?i)(^|\s)REM(\s|$)" />
-        <ignore start="&quot;" end="&quot;"/> <!-- """" = "-->
-    </comment-style>
-
-    <comment-style name="PASCAL">
-        <comment start="//" />
-        <comment start="\(\*" end="\*\)" />
-        <comment start="\{" end="\}" />
-        <ignore start="&apos;" end="&apos;"/> <!-- '''' = ' -->
-    </comment-style>
-
     <comment-style name="XML">
         <comment start="&lt;!--" end="--&gt;" />
     </comment-style>
@@ -71,28 +21,93 @@
         <comment start="/\*" end="\*/" />
     </comment-style>
 
-    <comment-style name="LISP">
-        <comment start=";" />
-        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
-            <!-- TODO -->
+    <comment-style name="C-LIKE">
+        <comment start="/\*" end="\*/" />
+        <comment start="//" />
+        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)" />
+            <!-- bere v úvahu tyto případy: '"', '\"' a "\""-->
     </comment-style>
 
-    <comment-style name="RUBY">
+    <comment-style name="JAVA">
+        <comment start="(/\*\*|/\*)" end="\*/" />
+        <comment start="//" />
+        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)" />
+    </comment-style>
+
+    <comment-style name="JS">
+        <comment start="/\*" end="\*/" />
+        <comment start="//" />
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)" />
+        <ignore start="[^/&quot;&apos;]/[^/*]" end="[^\\]/" /> <!-- regex -->
+    </comment-style>
+
+    <comment-style name="GROOVY">
+        <!-- TODO: Shebang line (#!/usr/bin/env groovy) -->
+        <comment start="(/\*\*|/\*)" end="\*/" />
+        <comment start="//" />
+        <ignore start="&quot;{3}" end="([^\\]&quot;{3}|^&quot;{3})" />
+        <ignore start="&quot;"    end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;{3}" end="([^\\]&apos;{3}|^&apos;{3})" />
+        <ignore start="&apos;"    end="([^\\]&apos;|^&apos;)" />
+    </comment-style>
+
+    <comment-style name="SCALA">
+        <comment start="(/\*\*|/\*)" end="\*/" />
+        <comment start="//" />
+        <ignore start="&quot;{3}" end="([^\\]&quot;{3}|^&quot;{3})" />
+        <ignore start="&quot;"    end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;"    end="([^\\]&apos;|^&apos;)" />
+    </comment-style>
+
+    <comment-style name="PYTHON">
         <comment start="#" />
-        <comment start="=begin" end="=end" />
-        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)"/>
-            <!-- TODO: multiline, literály -->
+        <ignore start="&quot;{3}" end="([^\\]&quot;{3}|^&quot;{3})" />
+        <ignore start="&quot;"    end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;{3}" end="([^\\]&apos;{3}|^&apos;{3})" />
+        <ignore start="&apos;"    end="([^\\]&apos;|^&apos;)" />
+    </comment-style>
+
+    <comment-style name="PHP">
+        <comment start="#" />
+        <comment start="//" />
+        <comment start="/\*" end="\*/" />
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)" />
+    </comment-style>
+
+    <comment-style name="PASCAL">
+        <comment start="//" />
+        <comment start="\(\*" end="\*\)" />
+        <comment start="\{" end="\}" />
+        <ignore start="&apos;" end="&apos;" /> <!-- '''' = ' -->
+    </comment-style>
+
+    <comment-style name="CLOJURE">
+        <!-- TODO: (comment ...) -->
+        <comment start="(^;|[^\\];)" />
+        <ignore start="(^&quot;|[^\\]&quot;)" end="(^&quot;|[^\\]&quot;)" />
     </comment-style>
 
     <comment-style name="ERLANG">
         <comment start="%" />
-        <!-- TODO: řetězce -->
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)" />
+        <!-- TODO: asi ještě znaky -->
     </comment-style>
 
     <comment-style name="LUA">
-        <comment start="--" />
         <comment start="--\[\[" end="--\]\]" />
-        <!-- TODO: řetězce -->
+        <comment start="--" />
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)" />
+        <ignore start="\[\[" end="\]\]" />    <!-- [[ str ]] == str -->
+        <ignore start="\[=\[" end="\]=\]" />  <!-- [=[ [[str]] ]=] == [[str]] -->
+    </comment-style>
+
+    <comment-style name="VB">
+        <comment start="&apos;" />
+        <comment start="(?i)(^|\s)REM(\s|$)" />
+        <ignore start="&quot;" end="&quot;" />  <!-- """" = "-->
     </comment-style>
 
 </comment-styles>

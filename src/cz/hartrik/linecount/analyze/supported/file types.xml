@@ -10,16 +10,17 @@
         <filter regex=".*\.(txt|TXT)$" />
     </file-type>
 
+    <!-- TODO:  -->
     <file-type name="Properties" type="TEXT" comment-style="NONE">
         <filter regex=".*\.properties$" />
     </file-type>
 
     <file-type name="XML" type="SOURCE" comment-style="XML">
-        <filter regex=".*\.xml$" />
+        <filter regex=".*\.(xml|fxml|xsd|xsl)$" />
     </file-type>
 
-    <file-type name="FXML" type="SOURCE" comment-style="XML">
-        <filter regex=".*\.fxml$" />
+    <file-type name="Markdown" type="SOURCE" comment-style="XML">
+        <filter regex=".*\.(md|markdown)$" />
     </file-type>
 
     <file-type name="HTML" type="SOURCE" comment-style="XML">
@@ -60,28 +61,20 @@
         <filter regex=".*\.js$" />
     </file-type>
 
-    <file-type name="Groovy" type="SOURCE" comment-style="C-LIKE">
+    <file-type name="Groovy" type="SOURCE" comment-style="GROOVY">
         <filter regex=".*\.groovy$" />
     </file-type>
 
-    <file-type name="Scala" type="SOURCE" comment-style="C-LIKE">
+    <file-type name="Scala" type="SOURCE" comment-style="SCALA">
         <filter regex=".*\.scala$" />
     </file-type>
 
-    <file-type name="Clojure" type="SOURCE" comment-style="LISP">
+    <file-type name="Clojure" type="SOURCE" comment-style="CLOJURE">
         <filter regex=".*\.clj$" />
-    </file-type>
-
-    <file-type name="Lisp" type="SOURCE" comment-style="LISP">
-        <filter regex=".*\.cl$" />
     </file-type>
 
     <file-type name="Erlang" type="SOURCE" comment-style="ERLANG">
         <filter regex=".*\.erl$" />
-    </file-type>
-
-    <file-type name="Ruby" type="SOURCE" comment-style="RUBY">
-        <filter regex=".*\.rb$" />
     </file-type>
 
     <file-type name="Pascal" type="SOURCE" comment-style="PASCAL">

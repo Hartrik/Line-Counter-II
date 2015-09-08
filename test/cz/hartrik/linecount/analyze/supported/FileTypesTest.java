@@ -15,9 +15,9 @@ import static org.junit.Assert.*;
 /**
  * Testuje jednotlivé podporované jazyky. <p>
  * Testovací zdrojové kódy mají komentáře o délce 10 znaků a odsazení dlouhé
- * 4 znaky.
+ * 2 nebo 4 znaky.
  *
- * @version 2015-09-07
+ * @version 2015-09-08
  * @author Patrik Harag
  */
 public class FileTypesTest {
@@ -136,6 +136,42 @@ public class FileTypesTest {
 
         assertThat(data.getCharsIndent(), equalTo(13 * 4));
         assertThat(data.getCharsComment(), equalTo(11 * 10));
+    }
+
+    @Test
+    public void testGroovy() throws IOException {
+        DataTypeCode data = analyze("GroovyTest.groovy", "Groovy");
+
+        assertThat(data.getLinesTotal(), equalTo(31));
+        assertThat(data.getLinesEmpty(), equalTo(8));
+        assertThat(data.getLinesComment(), equalTo(5));
+
+        assertThat(data.getCharsIndent(), equalTo(33 * 4));
+        assertThat(data.getCharsComment(), equalTo(13 * 10));
+    }
+
+    @Test
+    public void testClojure() throws IOException {
+        DataTypeCode data = analyze("Clojure test.clj", "Clojure");
+
+        assertThat(data.getLinesTotal(), equalTo(19));
+        assertThat(data.getLinesEmpty(), equalTo(4));
+        assertThat(data.getLinesComment(), equalTo(2));
+
+        assertThat(data.getCharsIndent(), equalTo(19 * 2));
+        assertThat(data.getCharsComment(), equalTo(7 * 10));
+    }
+
+    @Test
+    public void testLua() throws IOException {
+        DataTypeCode data = analyze("Lua test.lua", "Lua");
+
+        assertThat(data.getLinesTotal(), equalTo(21));
+        assertThat(data.getLinesEmpty(), equalTo(6));
+        assertThat(data.getLinesComment(), equalTo(4));
+
+        assertThat(data.getCharsIndent(), equalTo(3 * 4));
+        assertThat(data.getCharsComment(), equalTo(6 * 10));
     }
 
 }
