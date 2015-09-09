@@ -20,7 +20,8 @@ public class TextLoaders {
     private static GuessFileLoader defaultGuessLoader;
 
     private static GuessFileLoader createDefaultGuessLoader() {
-        Charset[] charsets = Resources.lines(CHARSET_LIST, TextLoaders.class)
+        Charset[] charsets = Resources
+                .lines(CHARSET_LIST, TextLoaders.class, Charset.forName("UTF-8"))
                 .map(String::trim)
                 .filter(line -> !line.isEmpty())
                 .map(line -> Exceptions.call(Charset::forName, line).orElse(null))

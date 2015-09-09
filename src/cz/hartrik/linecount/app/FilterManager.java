@@ -1,6 +1,7 @@
 
 package cz.hartrik.linecount.app;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 import javafx.stage.Window;
@@ -8,7 +9,7 @@ import javafx.stage.Window;
 /**
  * Vyvolává dialog pro filtrování, spravuje nastavení.
  *
- * @version 2014-08-11
+ * @version 2015-09-09
  * @author Patrik Harag
  */
 public class FilterManager {
@@ -26,7 +27,9 @@ public class FilterManager {
     }
 
     public Predicate<Path> getPredicate() {
-        return predicate;
+        return (path) -> {
+            return !Files.isDirectory(path) && predicate.test(path);
+        };
     }
 
 }

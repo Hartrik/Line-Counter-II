@@ -67,6 +67,7 @@ public class StagePanelTable implements StagePanel {
         return box;
     }
 
+    @Override
     public void clear() {
         table.getItems().clear();
     }

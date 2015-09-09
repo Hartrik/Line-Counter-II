@@ -7,18 +7,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 /**
+ * Panel zobrazující logy.
  *
- * @version 2015-09-06
+ * @version 2015-09-09
  * @author Patrik Harag
  */
 public class StagePanelLog implements StagePanel {
 
     private final TextArea textArea;
-    private final HBox box;
 
     public StagePanelLog() {
         this.textArea = new TextArea();
-        this.box = new HBox(textArea);
+
+        textArea.setEditable(false);
 
         HBox.setHgrow(textArea, Priority.ALWAYS);
         HBox.setMargin(textArea, new Insets(10, 10, 10, 10));
@@ -33,6 +34,7 @@ public class StagePanelLog implements StagePanel {
         textArea.setText(text);
     }
 
+    @Override
     public void clear() {
         textArea.clear();
     }

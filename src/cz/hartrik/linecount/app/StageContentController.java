@@ -2,16 +2,16 @@
 package cz.hartrik.linecount.app;
 
 import cz.hartrik.common.reflect.StopWatch;
-import cz.hartrik.common.ui.javafx.DragAndDropInitializer;
 import cz.hartrik.linecount.analyze.DataTypeCode;
+import cz.hartrik.linecount.analyze.FileFilter;
 import cz.hartrik.linecount.analyze.LineCountProvider;
 import cz.hartrik.linecount.analyze.SimpleStringConsumer;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,33 +22,45 @@ import javafx.scene.layout.*;
 /**
  * Controller
  *
- * @version 2015-09-06
+ * @version 2015-09-09
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
 
-    @FXML private ToggleGroup toggleGroup;
-    @FXML private HBox box;
+    @FXML private Button buttonStart;
+    @FXML private Button buttonOut;
 
-    @FXML private TextArea inputArea;
+    @FXML private ToggleGroup toggleGroup;
+    @FXML private HBox mainBox;
+    @FXML private VBox bottomBox;
+
+    private final ProgressBar progressBar = new ProgressBar();
+    { progressBar.setPrefWidth(Integer.MAX_VALUE); }
+
+    private final CustomOutputManager outputManager = new CustomOutputManager();
+
+    // panely
 
     private final StagePanelTable stagePanelTable = new StagePanelTable();
     private final StagePanelSummary stagePanelSummary = new StagePanelSummary();
     private final StagePanelLog stagePanelLog = new StagePanelLog();
     private final StagePanelAbout stagePanelAbout = new StagePanelAbout();
 
-    private final FilterManager filterManager = new FilterManager();
-    private final CustomOutputManager outputManager = new CustomOutputManager();
-    private final FileChooserManager fileChooserManager = new FileChooserManager();
+    private final StagePanelInput stagePanelInput = new StagePanelInput();
+
+    private final StagePanel[] panels = {
+            stagePanelTable, stagePanelSummary, stagePanelLog, stagePanelAbout,
+            stagePanelInput
+    };
 
     // --- inicializace
 
     @Override
     public void initialize(java.net.URL url, ResourceBundle rb) {
-        DragAndDropInitializer.initFileDragAndDrop(inputArea, this::addPaths);
-
         initToggle();
         updatePanel();
+
+        bottomBox.getChildren().add(stagePanelInput.getNode());
     }
 
     protected void initToggle() {
@@ -68,82 +80,98 @@ public class StageContentController implements Initializable {
 
     // --- metody
 
-    @FXML protected void showFilterDialog() {
-        filterManager.showDialog(inputArea.getScene().getWindow());
-    }
-
-    @FXML protected void clearInput() {
-        inputArea.clear();
-    }
-
     @FXML protected void showScriptDialog() {
         outputManager.showOutputDialog(
-                inputArea.getScene().getWindow(), stagePanelTable.getData());
-    }
-
-    @FXML protected void showFileChooser() {
-        addFiles(fileChooserManager.showDialog(inputArea.getScene().getWindow()));
+                bottomBox.getScene().getWindow(), stagePanelTable.getData());
     }
 
     @FXML protected void updatePanel() {
-        box.getChildren().clear();
+        mainBox.getChildren().clear();
 
         Object data = toggleGroup.getSelectedToggle().getUserData();
         Node node = ((StagePanel) data).getNode();
 
-        box.getChildren().add(node);
+        mainBox.getChildren().add(node);
     }
 
     @FXML protected void count() {
-        List<Path> paths = getPaths()
+        List<Path> paths = stagePanelInput.getPaths()
                 .map(Paths::get).collect(Collectors.toList());
 
-        if (paths.isEmpty()) {
-            stagePanelTable.clear();
-            stagePanelSummary.update(null);
-            stagePanelLog.clear();
+        clear();
 
-        } else {
+        if (!paths.isEmpty()) {
             SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
-            LineCountProvider lineCountProvider = new LineCountProvider(
-                    filterManager.getPredicate(), stringConsumer);
 
-            StopWatch stopWatch = StopWatch.measure(() -> {
-                lineCountProvider.analyze(paths);
-            });
+            FileFilter fileFilter = new FileFilter(
+                    stagePanelInput.getFilter(),
+                    (p, e) -> stringConsumer.accept("Neexistující složka/soubor - " + p));
 
-            stringConsumer.accept(
-                    "--- výsledný čas: " + stopWatch.getMillis() + " ms");
+            Collection<Path> filtered = fileFilter.filter(paths);
 
-            Collection<DataTypeCode> values = lineCountProvider.getStats().values();
-            List<DataTypeCode> list = values.stream()
-                    .sorted((t1, t2) -> t1.getFileType().getName()
-                            .compareTo(t2.getFileType().getName()))
-                    .collect(Collectors.toList());
+            if (filtered.isEmpty())
+                return;
 
-            stagePanelTable.setData(list);
-            stagePanelSummary.update(list);
-            stagePanelLog.setText(stringConsumer.toString());
+            Thread thread = new Thread(() -> process(filtered, stringConsumer));
+            thread.start();
         }
     }
 
-    public Stream<String> getPaths() {
-        String paths = inputArea.getText();
+    private void process(Collection<Path> paths, Consumer<String> consumer) {
+        LineCountProvider lineCountProvider = new LineCountProvider(consumer);
 
-        return Arrays.stream(paths.split("\\s*\n\\s*"))
-                .filter(line -> !line.isEmpty());
+        Platform.runLater(() -> {
+            enableEditing(false);
+            showProgressBar();
+        });
+
+        StopWatch stopWatch = StopWatch.measure(() -> {
+            int i = 0;
+            for (Path path : paths) {
+                lineCountProvider.analyze(path);
+
+                final double progress = (double) ++i / paths.size();
+                Platform.runLater(() -> progressBar.setProgress(progress));
+            }
+        });
+
+        consumer.accept("--- výsledný čas: " + stopWatch.getMillis() + " ms");
+
+        Collection<DataTypeCode> values = lineCountProvider.getStats().values();
+        List<DataTypeCode> list = values.stream()
+                .sorted((t1, t2) -> t1.getFileType().getName()
+                        .compareTo(t2.getFileType().getName()))
+                .collect(Collectors.toList());
+
+        Platform.runLater(() -> {
+            hideProgressBar();
+
+            stagePanelTable.setData(list);
+            stagePanelSummary.update(list);
+            stagePanelLog.setText(consumer.toString());
+
+            enableEditing(true);
+        });
     }
 
-    public void addPaths(Collection<Path> files) {
-        addFiles(files.stream().map(Path::toFile).collect(Collectors.toList()));
+    private void showProgressBar() {
+        progressBar.setProgress(0);
+        bottomBox.getChildren().add(0, progressBar);
     }
 
-    public void addFiles(Collection<File> files) {
-        if (files == null || files.isEmpty()) return;
+    private void hideProgressBar() {
+        bottomBox.getChildren().remove(0);
+    }
 
-        inputArea.setText(Stream
-                .concat(getPaths(), files.stream().map(File::getAbsolutePath))
-                .collect(Collectors.joining("\n")));
+    private void enableEditing(boolean enable) {
+        buttonStart.setDisable(!enable);
+        buttonOut.setDisable(!enable);
+
+        Arrays.stream(panels).forEach(p -> p.enableEditing(enable));
+    }
+
+    private void clear() {
+        Arrays.stream(panels).forEach(StagePanel::clear);
     }
 
 }

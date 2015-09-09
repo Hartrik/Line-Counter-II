@@ -20,7 +20,7 @@
                <children>
                   <ToolBar maxHeight="20.0" minWidth="20.0" prefHeight="20.0" VBox.vgrow="NEVER">
                     <items>
-                      <Button defaultButton="true" mnemonicParsing="false" onAction="#count" prefWidth="80.0" text="Spočítat" />
+                      <Button fx:id="buttonStart" defaultButton="true" mnemonicParsing="false" onAction="#count" prefWidth="80.0" text="Spočítat" />
                         <Separator prefWidth="30.0" visible="false" />
                         <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" text="Tabulka">
                            <opaqueInsets>
@@ -38,54 +38,20 @@
                         <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="Log" toggleGroup="$toggleGroup" />
                         <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="Informace" toggleGroup="$toggleGroup" />
                         <Separator layoutX="94.0" layoutY="10.0" prefWidth="30.0" visible="false" />
-                        <Button mnemonicParsing="false" onAction="#showScriptDialog" prefWidth="80.0" text="Výstup" />
+                        <Button fx:id="buttonOut" mnemonicParsing="false" onAction="#showScriptDialog" prefWidth="80.0" text="Výstup" />
                     </items>
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </ToolBar>
-                  <HBox fx:id="box" VBox.vgrow="ALWAYS" />
+                  <HBox fx:id="mainBox" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <HBox spacing="5.0">
-               <children>
-                  <TextArea fx:id="inputArea" promptText="Nové položky můžete přidat také přetažením" HBox.hgrow="ALWAYS" />
-                  <VBox spacing="5.0" HBox.hgrow="NEVER">
-                     <children>
-                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#showFileChooser">
-                           <graphic>
-                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@icon%20-%20folder%20(16).png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#showFilterDialog">
-                           <graphic>
-                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@icon%20-%20filter%20(16).png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#clearInput">
-                           <graphic>
-                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@icon%20-%20delete%20(16).png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                     </children>
-                  </VBox>
-               </children>
+            <VBox fx:id="bottomBox" spacing="5.0" SplitPane.resizableWithParent="false">
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
-            </HBox>
+            </VBox>
         </items>
       </SplitPane>
    </children>

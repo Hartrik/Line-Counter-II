@@ -6,30 +6,29 @@ import cz.hartrik.linecount.analyze.supported.FileTypes;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  *
- * @version 2015-09-07
+ * @version 2015-09-09
  * @author Patrik Harag
  */
-public class LineCountProvider extends FileAnalyzeProvider {
+public class LineCountProvider {
 
-    protected final Predicate<Path> filter;
-    protected final Consumer<String> logConsumer;
-    protected final Map<FileType, DataTypeCode> stats = new LinkedHashMap<>();
+    private final Consumer<String> logConsumer;
+    private final Map<FileType, DataTypeCode> stats = new LinkedHashMap<>();
 
-    protected final UnknownFileAnalyzer unknownFileAnalyzer;
-    protected final TextFileAnalyzer textFileAnalyzer;
-    protected final SourceCodeAnalyzer sourceFileAnalyzer;
+    private final UnknownFileAnalyzer unknownFileAnalyzer;
+    private final TextFileAnalyzer textFileAnalyzer;
+    private final SourceCodeAnalyzer sourceFileAnalyzer;
 
-    public LineCountProvider(Predicate<Path> filter, Consumer<String> logConsumer) {
-        this.filter = filter;
+    public LineCountProvider(Consumer<String> logConsumer) {
         this.logConsumer = logConsumer;
 
         this.unknownFileAnalyzer = new UnknownFileAnalyzer();
@@ -37,37 +36,45 @@ public class LineCountProvider extends FileAnalyzeProvider {
         this.sourceFileAnalyzer  = new SourceCodeAnalyzer();
     }
 
-    // implementace abstraktních metod
+    public void analyze(Path path) {
+        consumePath(path);
+    }
 
-    @Override
+    public void analyze(Path... paths) {
+        analyze(Arrays.asList(paths));
+    }
+
+    public void analyze(Collection<Path> paths) {
+        for (Path path : paths) {
+            consumePath(path);
+        }
+    }
+
     protected void consumeLog(String message) {
         logConsumer.accept(message);
     }
 
-    @Override
     protected void consumePath(Path path) {
-        if (!filter.test(path)) return;
-
         if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
 
             if (!Files.isReadable(path)) {
-                logConsumer.accept("Soubor není určen ke čtení - " + path.toString());
+                consumeLog("Soubor není určen ke čtení - " + path.toString());
                 return;
             }
 
-            FileType type = getFileType(path);
+            FileType type = detectFileType(path);
             DataTypeCode typeData = getData(type);
             doAnalysis(path, typeData);
 
         } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+            consumeLog("Cesta ukazuje na adresář - " + path.toString());
 
         } else if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
-            logConsumer.accept(
-                    "Neexistující složka/soubor - " + path.toString());
+            consumeLog("Neexistující složka/soubor - " + path.toString());
         }
     }
 
-    protected FileType getFileType(Path path) {
+    protected FileType detectFileType(Path path) {
         String fileName = path.getFileName().toString();
 
         Optional<FileType> found = (fileName.contains("."))
@@ -75,12 +82,10 @@ public class LineCountProvider extends FileAnalyzeProvider {
                 : Optional.empty();
 
         if (!found.isPresent())
-            logConsumer.accept("Soubor neznámého typu - " + path.toString());
+            consumeLog("Soubor neznámého typu - " + path.toString());
 
         return found.orElse(FileTypes.OTHER);
     }
-
-    // metody
 
     protected void doAnalysis(Path path, DataTypeCode typeData) {
         final FileType fileType = typeData.getFileType();
@@ -110,10 +115,10 @@ public class LineCountProvider extends FileAnalyzeProvider {
                 typeData.addCharsWhitespace(data.getCharsWhitespace());
 
             } else {
-                logConsumer.accept("Nepodporované kódování - " + path.toString());
+                consumeLog("Nepodporované kódování - " + path.toString());
             }
         } catch (Exception e) {
-            logConsumer.accept("Chyba při čtení souboru - " + path.toString());
+            consumeLog("Chyba při čtení souboru - " + path.toString());
         }
     }
 
