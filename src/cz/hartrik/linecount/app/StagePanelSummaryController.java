@@ -13,7 +13,7 @@ import javafx.scene.chart.PieChart;
 /**
  * FXML Controller class
  *
- * @version 2014-08-15
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class StagePanelSummaryController implements Initializable {
@@ -35,26 +35,23 @@ public class StagePanelSummaryController implements Initializable {
         }
     }
 
-    protected void updateChartLines(PieChart chart,
-            Collection<DataTypeCode> data) {
-
-        chart.setData(data.stream()
-                .filter((DataTypeCode t) -> t.getLinesTotal() > 0)
-                .map((DataTypeCode t)
-                        -> new PieChart.Data(
-                                t.getFileType().getName(), t.getLinesTotal()))
+    protected void updateChartLines(PieChart chart, Collection<DataTypeCode> coll) {
+        chart.setData(coll.stream()
+                .filter((data) -> data.getLinesTotal() > 0)
+                .sorted((d1, d2) -> Integer.compare(
+                        d2.getLinesTotal(), d1.getLinesTotal()))
+                .map((data) -> new PieChart.Data(
+                        data.getFileType().getName(), data.getLinesTotal()))
                 .collect(Collectors.toCollection(()
                         -> FXCollections.observableArrayList())));
     }
 
-    protected void updateChartFiles(PieChart chart,
-            Collection<DataTypeCode> data) {
-
-        chart.setData(data.stream()
-                .filter((DataTypeCode t) -> t.getFiles() > 0)
-                .map((DataTypeCode t)
-                        -> new PieChart.Data(
-                                t.getFileType().getName(), t.getFiles()))
+    protected void updateChartFiles(PieChart chart, Collection<DataTypeCode> coll) {
+        chart.setData(coll.stream()
+                .filter((data) -> data.getFiles() > 0)
+                .sorted((d1, d2) -> Integer.compare(d2.getFiles(), d1.getFiles()))
+                .map((data) -> new PieChart.Data(
+                        data.getFileType().getName(), data.getFiles()))
                 .collect(Collectors.toCollection(()
                         -> FXCollections.observableArrayList())));
     }

@@ -139,15 +139,9 @@ public class StageContentController implements Initializable {
 
         consumer.accept("--- výsledný čas: " + stopWatch.getMillis() + " ms");
 
-        Collection<DataTypeCode> values = lineCountProvider.getStats().values();
-        List<DataTypeCode> list = values.stream()
-                .sorted((t1, t2) -> t1.getFileType().getName()
-                        .compareTo(t2.getFileType().getName()))
-                .collect(Collectors.toList());
-
         Platform.runLater(() -> {
             hideProgressBar();
-            showResults(list, consumer.toString());
+            showResults(lineCountProvider.getStats().values(), consumer.toString());
             enableEditing(true);
         });
     }
