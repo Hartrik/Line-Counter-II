@@ -13,7 +13,7 @@
 
 (def str-1 "; this is not comment")  ; comment 4
 (def str-2 " multiline
-            ....    ; this is not comment")  ; comment 5
+            ; this is not comment")  ; comment 5
 (def str-3 (str \space \" \space \;))  ; comment 6
 
 ; comment 7

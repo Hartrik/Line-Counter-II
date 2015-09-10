@@ -10,7 +10,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * @version 2015-09-03
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class CommentParserTest {
@@ -20,7 +20,7 @@ public class CommentParserTest {
         CommentStyles.initDefaultStyles();
     }
 
-    private final CommentStyle javaCS = CommentStyles.getByName("JAVA");
+    private final CommentStyle javaCS = CommentStyles.getByName("C-LIKE");
     private final CommentParser parser = new CommentParser(javaCS);
 
     // testy metody pro hledání nejbližšího začátku komentáře nebo
@@ -126,15 +126,6 @@ public class CommentParserTest {
         assertTrue(!parser.isContinue());
         assertTrue(out.size() == 1);
         assertEquals("ahoj \n světe", out.get(0));
-    }
-
-    @Test
-    public void testJavaDocComent() {
-        List<String> out = parser.analyze(" . . /**ahoj*/");
-
-        assertTrue(!parser.isContinue());
-        assertTrue(out.size() == 1);
-        assertEquals("ahoj", out.get(0));
     }
 
     @Test

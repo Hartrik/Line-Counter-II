@@ -2,20 +2,17 @@
 package cz.hartrik.linecount.analyze;
 
 import cz.hartrik.common.Exceptions;
-import cz.hartrik.common.Pair;
+import cz.hartrik.common.IntPair;
 import cz.hartrik.linecount.analyze.load.TextLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
  * Analyzuje zdrojový kód.
  *
- * @version 2015-09-07
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
@@ -39,7 +36,7 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
             builder = readLines(lines, data);
         }
 
-        finalizeComments(data, builder);
+        countComments(data, builder);
 
         data.addLinesCode(data.getLinesTotal() - data.getLinesEmpty()
                 - data.getLinesComment());
@@ -78,61 +75,68 @@ public class SourceCodeAnalyzer implements FileAnalyzer<DataTypeCode> {
 
             if ((whitespace - 1) == length)
                 data.addLinesEmpty(1);
-            else if (startsWithComment(data, line))
-                data.addLinesComment(1);
         });
 
         return builder;
     }
 
-    private boolean startsWithComment(DataTypeCode data, String line) {
-        CommentStyle cs = data.getFileType().getCommentStyle();
-
-        for (Pair<Pattern, Pattern> commentPattern : cs.getCommentPatterns()) {
-            Matcher matcher = commentPattern.getFirst().matcher(line);
-            if (matcher.find()) {
-                if (line.substring(0, matcher.start()).trim().isEmpty())
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void finalizeComments(DataTypeCode data, StringBuilder builder) {
+    private void countComments(DataTypeCode data, StringBuilder builder) {
         CommentStyle commentStyle = data.getFileType().getCommentStyle();
         CommentParser parser = new CommentParser(commentStyle);
 
-        List<String> comments = parser.analyze(builder.toString());
+        for (IntPair<String> pair : parser.getIterable(builder)) {
+            Integer startPos = pair.getValue();
+            String comment = pair.getSecond();
 
-        for (String comment : comments) {
+            if (lineStartsWithComment(builder, startPos - 1))
+                data.addLinesComment(1);
+
             data.addLinesComment(countLinesInComment(comment));
             data.addCharsComment(comment.length());
         }
+    }
+
+    private boolean lineStartsWithComment(CharSequence sequence, int intex) {
+        if (sequence.charAt(intex + 1) == '\n')
+            return true;  // regex obsahuje ^
+
+        int i = intex;
+        while (i >= 0) {
+            char next = sequence.charAt(i);
+            if (next == '\n')
+                return true;
+            else if (Character.isWhitespace(next))
+                i--;
+            else
+                return false;
+        }
+        return true;
     }
 
     private int countLinesInComment(String comment) {
         if (comment.isEmpty()) return 0;
 
         final String[] arrayOfLines = comment.split("\n");
-        final int length = arrayOfLines.length;
+        final int arrayLength = arrayOfLines.length;
 
-        if (length == 0) {
-            return 0;  // to by se stát nemělo
+        int lines = 0;
 
-        } else if (length == 1) {
-            return 0;  // jednořádkový komentář, pokud jím řádka začínala,
-                       // již je započínaý
-        } else {
-            int lines = 1;  // poslední řádka začná komentářem a není prázdná
-                            // (kvůli sekvenci, která ukončuje komentář)
+        if (!comment.isEmpty() && comment.charAt(comment.length() - 1) == '\n') {
+            // na posledním řádku komentáře není kromě ukončovací sekvence nic
+            lines = 1;
+        }
 
-            for (int i = 1; i < length - 1; i++)
+        // jednořádkový komentář, pokud jím řádka začínala, již je započínaý
+        if (arrayLength > 1) {
+            lines += 1;  // poslední řádka začná komentářem a není prázdná
+                         // (kvůli sekvenci, která ukončuje komentář)
+
+            for (int i = 1; i < arrayLength - 1; i++)
                 if (!isBlank(arrayOfLines[i]))
                     lines++;
-
-            return lines;
         }
+
+        return lines;
     }
 
     private static boolean isBlank(String str) {

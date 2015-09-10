@@ -48,11 +48,11 @@
         <filter regex=".*\.(H|h|hh|hpp)$" />
     </file-type>
 
-    <file-type name="C#" type="SOURCE" comment-style="C-LIKE">
+    <file-type name="C#" type="SOURCE" comment-style="C-SHARP">
         <filter regex=".*\.cs$" />
     </file-type>
 
-    <file-type name="Java" type="SOURCE" comment-style="JAVA">
+    <file-type name="Java" type="SOURCE" comment-style="C-LIKE">
         <filter regex=".*\.java$" />
     </file-type>
 

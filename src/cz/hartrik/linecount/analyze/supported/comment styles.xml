@@ -28,10 +28,12 @@
             <!-- bere v úvahu tyto případy: '"', '\"' a "\""-->
     </comment-style>
 
-    <comment-style name="JAVA">
-        <comment start="(/\*\*|/\*)" end="\*/" />
+    <comment-style name="C-SHARP">
+        <comment start="/\*" end="\*/" />
         <comment start="//" />
-        <ignore start="([^&apos;\\]&quot;|^&quot;)" end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&quot;" end="([^\\]&quot;|^&quot;)" />
+        <ignore start="&apos;" end="([^\\]&apos;|^&apos;)" />
+            <!-- v C# je možné psát uvozovky takto: " ""text"" " -->
     </comment-style>
 
     <comment-style name="JS">
@@ -107,7 +109,7 @@
     <comment-style name="VB">
         <comment start="&apos;" />
         <comment start="(?i)(^|\s)REM(\s|$)" />
-        <ignore start="&quot;" end="&quot;" />  <!-- """" = "-->
+        <ignore start="&quot;" end="&quot;" />  <!-- """" = " -->
     </comment-style>
 
 </comment-styles>
