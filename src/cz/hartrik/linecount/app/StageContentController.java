@@ -22,7 +22,7 @@ import javafx.scene.layout.*;
 /**
  * Controller
  *
- * @version 2015-09-09
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
@@ -109,11 +109,13 @@ public class StageContentController implements Initializable {
 
             Collection<Path> filtered = fileFilter.filter(paths);
 
-            if (filtered.isEmpty())
-                return;
+            if (filtered.isEmpty()) {
+                showResults(Collections.emptyList(), stringConsumer.toString());
 
-            Thread thread = new Thread(() -> process(filtered, stringConsumer));
-            thread.start();
+            } else {
+                Thread thread = new Thread(() -> process(filtered, stringConsumer));
+                thread.start();
+            }
         }
     }
 
@@ -145,11 +147,7 @@ public class StageContentController implements Initializable {
 
         Platform.runLater(() -> {
             hideProgressBar();
-
-            stagePanelTable.setData(list);
-            stagePanelSummary.update(list);
-            stagePanelLog.setText(consumer.toString());
-
+            showResults(list, consumer.toString());
             enableEditing(true);
         });
     }
@@ -168,6 +166,10 @@ public class StageContentController implements Initializable {
         buttonOut.setDisable(!enable);
 
         Arrays.stream(panels).forEach(p -> p.enableEditing(enable));
+    }
+
+    private void showResults(Collection<DataTypeCode> results, String log) {
+        Arrays.stream(panels).forEach((p) -> p.showResults(results, log));
     }
 
     private void clear() {

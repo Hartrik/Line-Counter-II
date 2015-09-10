@@ -15,7 +15,7 @@ import javafx.scene.text.Text;
 /**
  * Spravuje panel s tabulkou.
  *
- * @version 2015-09-06
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class StagePanelTable implements StagePanel {
@@ -72,8 +72,9 @@ public class StagePanelTable implements StagePanel {
         table.getItems().clear();
     }
 
-    public void setData(Collection<DataTypeCode> list) {
-        table.getItems().setAll(list);
+    @Override
+    public void showResults(Collection<DataTypeCode> results, String log) {
+        table.getItems().setAll(results);
     }
 
     public Collection<DataTypeCode> getData() {

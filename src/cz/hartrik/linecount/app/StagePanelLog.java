@@ -1,5 +1,7 @@
 package cz.hartrik.linecount.app;
 
+import cz.hartrik.linecount.analyze.DataTypeCode;
+import java.util.Collection;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -9,7 +11,7 @@ import javafx.scene.layout.Priority;
 /**
  * Panel zobrazující logy.
  *
- * @version 2015-09-09
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class StagePanelLog implements StagePanel {
@@ -28,6 +30,11 @@ public class StagePanelLog implements StagePanel {
     @Override
     public Node getNode() {
         return textArea;
+    }
+
+    @Override
+    public void showResults(Collection<DataTypeCode> results, String log) {
+        setText(log);
     }
 
     public void setText(String text) {

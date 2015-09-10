@@ -8,7 +8,7 @@ import javafx.scene.Node;
 /**
  * Spravuje panel s grafy.
  *
- * @version 2015-09-09
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class StagePanelSummary implements StagePanel {
@@ -28,10 +28,11 @@ public class StagePanelSummary implements StagePanel {
 
     @Override
     public void clear() {
-        update(null);
+        showResults(null, "");
     }
 
-    public synchronized void update(Collection<DataTypeCode> data) {
+    @Override
+    public synchronized void showResults(Collection<DataTypeCode> data, String log) {
         if (chartPanel == null)
             load();
 
