@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,7 +19,7 @@ import javafx.stage.Stage;
 /**
  * Vstupní třída
  *
- * @version 2015-09-07
+ * @version 2015-09-10
  * @author Patrik Harag
  */
 public class Main extends Application {
@@ -37,20 +38,14 @@ public class Main extends Application {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        Thread thread = new Thread(() -> loadConfiguration());
+        thread.start();
+
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-
-        // načtení konfigurace
-        CommentStyles.initDefaultStyles();
-        initUserCommentStyles(USER_DIR.resolve(FILE_USER_COMMENT_STYLES));
-
-        FileTypes.initDefaultFileTypes();
-        initUserFileTypes(USER_DIR.resolve(FILE_USER_FILE_TYPES));
-
-        // GUI
         Parent root = FXMLLoader.load(getClass().getResource(FILE_FXML));
         Scene scene = new Scene(root);
 
@@ -65,29 +60,41 @@ public class Main extends Application {
         stage.show();
     }
 
-    private static void initUserCommentStyles(Path file) throws IOException {
+    private static void loadConfiguration() {
+        CommentStyles.initDefaultStyles();
+        initUserCommentStyles(USER_DIR.resolve(FILE_USER_COMMENT_STYLES));
+
+        FileTypes.initDefaultFileTypes();
+        initUserFileTypes(USER_DIR.resolve(FILE_USER_FILE_TYPES));
+    }
+
+    private static void initUserCommentStyles(Path file) {
         try {
             if (Files.isReadable(file))
                 CommentStyles.initStyles(Files.newInputStream(file));
 
         } catch (Exception e) {
-            showErrorDialog(
-                    "Chyba", "Chyba při načítání konfigurace",
-                    "Došlo k chybě při načítání konfiguračního souboru: "
-                            + FILE_USER_COMMENT_STYLES, e);
+            Platform.runLater(() -> {
+                showErrorDialog(
+                        "Chyba", "Chyba při načítání konfigurace",
+                        "Došlo k chybě při načítání konfiguračního souboru: "
+                                + FILE_USER_COMMENT_STYLES, e);
+            });
         }
     }
 
-    private static void initUserFileTypes(Path file) throws IOException {
+    private static void initUserFileTypes(Path file) {
         try {
             if (Files.isReadable(file))
                 FileTypes.initFileType(Files.newInputStream(file));
 
         } catch (Exception e) {
-            showErrorDialog(
-                    "Chyba", "Chyba při načítání konfigurace",
-                    "Došlo k chybě při načítání konfiguračního souboru: "
-                            + FILE_USER_FILE_TYPES, e);
+            Platform.runLater(() -> {
+                showErrorDialog(
+                        "Chyba", "Chyba při načítání konfigurace",
+                        "Došlo k chybě při načítání konfiguračního souboru: "
+                                + FILE_USER_FILE_TYPES, e);
+            });
         }
     }
 
