@@ -2,6 +2,7 @@ package cz.hartrik.linecount.app;
 
 import cz.hartrik.linecount.analyze.DataTypeCode;
 import java.util.Collection;
+import java.util.ResourceBundle;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -28,7 +29,7 @@ public class StagePanelLog implements StagePanel {
     }
 
     @Override
-    public Node getNode() {
+    public Node getNode(ResourceBundle rb) {
         return textArea;
     }
 

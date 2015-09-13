@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -19,17 +21,22 @@ import javafx.stage.Stage;
 /**
  * Vstupní třída
  *
- * @version 2015-09-10
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class Main extends Application {
 
-    public static final String FILE_FXML = "StageContent.fxml";
-    public static final String FILE_FRAME_ICON = "icon - text (32).png";
+    public static final String APP_VERSION = "1.2";
+    public static final String APP_VERSION_DATE = "2015-09-08";
+
+    static final String FILE_FXML = "StageContent.fxml";
+    static final String FILE_FRAME_ICON = "icon - text (32).png";
 
     public static final Path USER_DIR = Paths.get("");
-    public static final String FILE_USER_COMMENT_STYLES = "comment styles.xml";
-    public static final String FILE_USER_FILE_TYPES = "file types.xml";
+    static final String FILE_USER_COMMENT_STYLES = "comment styles.xml";
+    static final String FILE_USER_FILE_TYPES = "file types.xml";
+
+    private static ResourceBundle resourceBundle;
 
     /**
      * Vstupní metoda
@@ -38,6 +45,9 @@ public class Main extends Application {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        resourceBundle = ResourceBundle.getBundle(
+                "cz.hartrik.linecount.app.strings", new Locale("cs", "CZ"));
+
         Thread thread = new Thread(() -> loadConfiguration());
         thread.start();
 
@@ -46,14 +56,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource(FILE_FXML));
-        Scene scene = new Scene(root);
+        Parent root = FXMLLoader.load(
+                getClass().getResource(FILE_FXML), resourceBundle);
 
         stage.setMinHeight(400);
         stage.setMinWidth(700);
-        stage.setTitle("Počítač řádků II");
+        stage.setTitle(resourceBundle.getString("app-title"));
 
-        stage.setScene(scene);
+        stage.setScene(new Scene(root));
         stage.getIcons().add(new Image(
                 getClass().getResourceAsStream(FILE_FRAME_ICON)));
 
@@ -74,12 +84,7 @@ public class Main extends Application {
                 CommentStyles.initStyles(Files.newInputStream(file));
 
         } catch (Exception e) {
-            Platform.runLater(() -> {
-                showErrorDialog(
-                        "Chyba", "Chyba při načítání konfigurace",
-                        "Došlo k chybě při načítání konfiguračního souboru: "
-                                + FILE_USER_COMMENT_STYLES, e);
-            });
+            showErrorDialog(resourceBundle, FILE_USER_COMMENT_STYLES, e);
         }
     }
 
@@ -89,13 +94,18 @@ public class Main extends Application {
                 FileTypes.initFileType(Files.newInputStream(file));
 
         } catch (Exception e) {
-            Platform.runLater(() -> {
-                showErrorDialog(
-                        "Chyba", "Chyba při načítání konfigurace",
-                        "Došlo k chybě při načítání konfiguračního souboru: "
-                                + FILE_USER_FILE_TYPES, e);
-            });
+            showErrorDialog(resourceBundle, FILE_USER_FILE_TYPES, e);
         }
+    }
+
+    private static void showErrorDialog(ResourceBundle rb, String file, Exception e) {
+        Platform.runLater(() -> {
+            showErrorDialog(
+                    rb.getString("dialog/config-err/title"),
+                    rb.getString("dialog/config-err/header"),
+                    String.format(rb.getString("dialog/config-err/content"), file),
+                    e);
+        });
     }
 
     private static void showErrorDialog(

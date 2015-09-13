@@ -1,32 +1,37 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.linecount.analyze.DataTypeCode;
 import cz.hartrik.common.io.Resources;
 import cz.hartrik.jfxeditor.CodeEditor;
 import cz.hartrik.jfxeditor.build.CodeMirrorBuilder;
 import cz.hartrik.jfxeditor.build.Template;
 import cz.hartrik.jfxeditor.codemirror.CMResources;
 import cz.hartrik.jfxeditor.dialog.ScriptDialog;
+import cz.hartrik.linecount.analyze.DataTypeCode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Supplier;
 import javafx.stage.Modality;
 import javafx.stage.Window;
 
 /**
- * @version 2015-09-02
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class CustomOutputManager {
 
     protected static final String SCRIPT_FILE = "CustomOutputScript.js";
-
-    protected static final String TITLE = "Výstup";
     protected static final String DEFAULT_ENGINE = "js";
 
-    protected ScriptDialog scriptDialog = null;
+    private ScriptDialog scriptDialog = null;
+
+    private final  ResourceBundle resourceBundle;
+
+    public CustomOutputManager(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
 
     public void showOutputDialog(Window window, Collection<DataTypeCode> data) {
         if (scriptDialog == null) {
@@ -49,14 +54,14 @@ public class CustomOutputManager {
                 .selectTheme("eclipse")
                 .build();
 
-        CodeEditor cd = new CodeEditor("text", template);
+        CodeEditor cd = new CodeEditor("", template);
         Map<String, Supplier<?>> map = Collections.singletonMap("data", () -> data);
         String def = Resources.text(SCRIPT_FILE, getClass());
 
         ScriptDialog dialog = new ScriptDialog(cd, window, map, DEFAULT_ENGINE, def);
         dialog.setWidth(700);
         dialog.setMinHeight(500);
-        dialog.setTitle(TITLE);
+        dialog.setTitle(resourceBundle.getString("dialog/script/title"));
 
         return dialog;
     }

@@ -10,20 +10,16 @@ import javafx.stage.Window;
 /**
  * Nastavuje a vyvolává file chooser.
  *
- * @version 2015-09-04
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class FileChooserManager {
 
-    static final String TITLE = "Výběr souborů";
-    static final String FILTER_ALL = "Všechny soubory";
-    static final String FILTER_SUPPORTED = "Všechny podporované soubory";
+    private final FileChooser chooser;
 
-    protected final FileChooser chooser;
-
-    public FileChooserManager() {
+    public FileChooserManager(String title) {
         chooser = new FileChooser();
-        chooser.setTitle(TITLE);
+        chooser.setTitle(title);
         chooser.setInitialDirectory(NioUtil.workingDirectory().toFile());
     }
 

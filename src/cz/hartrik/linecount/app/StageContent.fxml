@@ -20,9 +20,9 @@
                <children>
                   <ToolBar maxHeight="20.0" minWidth="20.0" prefHeight="20.0" VBox.vgrow="NEVER">
                     <items>
-                      <Button fx:id="buttonStart" defaultButton="true" mnemonicParsing="false" onAction="#count" prefWidth="80.0" text="Spočítat" />
+                      <Button fx:id="buttonStart" defaultButton="true" mnemonicParsing="false" onAction="#count" prefWidth="80.0" text="%toolbar/count" />
                         <Separator prefWidth="30.0" visible="false" />
-                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" text="Tabulka">
+                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" text="%toolbar/summary">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
@@ -30,15 +30,15 @@
                               <ToggleGroup fx:id="toggleGroup" />
                            </toggleGroup>
                         </ToggleButton>
-                        <ToggleButton layoutX="128.0" layoutY="10.0" mnemonicParsing="false" prefWidth="80.0" text="Grafy" toggleGroup="$toggleGroup">
+                        <ToggleButton layoutX="128.0" layoutY="10.0" mnemonicParsing="false" prefWidth="80.0" text="%toolbar/charts" toggleGroup="$toggleGroup">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
                         </ToggleButton>
-                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="Log" toggleGroup="$toggleGroup" />
-                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="Informace" toggleGroup="$toggleGroup" />
+                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="%toolbar/log" toggleGroup="$toggleGroup" />
+                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="%toolbar/about" toggleGroup="$toggleGroup" />
                         <Separator layoutX="94.0" layoutY="10.0" prefWidth="30.0" visible="false" />
-                        <Button fx:id="buttonOut" mnemonicParsing="false" onAction="#showScriptDialog" prefWidth="80.0" text="Výstup" />
+                        <Button fx:id="buttonOut" mnemonicParsing="false" onAction="#showScriptDialog" prefWidth="80.0" text="%toolbar/out" />
                     </items>
                      <VBox.margin>
                         <Insets />

@@ -5,6 +5,7 @@ import cz.hartrik.linecount.analyze.DataTypeCode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -17,7 +18,7 @@ import javafx.scene.text.Text;
 /**
  * Spravuje panel s tabulkou.
  *
- * @version 2015-09-10
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class StagePanelTable implements StagePanel {
@@ -34,40 +35,42 @@ public class StagePanelTable implements StagePanel {
 
         HBox.setHgrow(table, Priority.ALWAYS);
         HBox.setMargin(table, new Insets(-1, -2, -1, -1));
-
-        initTable();
-    }
-
-    private void initTable() {
-        // inicializace sloupců
-
-        Function<Number, String> format = (n) -> String.format("%,d ", n);
-
-        TableInitializer.of(table)
-            .addStringColumn("Typ", v -> " " + v.getFileType().getName())
-                    .init(c -> c.setStyle("-fx-alignment: center-left;"))
-            .addObjectColumn("Soubory", DataTypeCode::getFiles, format)
-            .addObjectColumn("Velikost\nv bajtech", DataTypeCode::getSizeTotal, format)
-            .addInnerColumn("Řádky")
-                .addObjectColumn("kód", DataTypeCode::getLinesCode, format)
-                .addObjectColumn("komentáře", DataTypeCode::getLinesComment, format)
-                .addObjectColumn("prázdné", DataTypeCode::getLinesEmpty, format)
-                .addObjectColumn("celkem", DataTypeCode::getLinesTotal, format)
-                        .init(c -> c.setSortType(TableColumn.SortType.DESCENDING))
-                        .init(c -> table.getSortOrder().add(0, c))
-            .addInnerColumn("Znaky")
-                .addObjectColumn("komentáře", DataTypeCode::getCharsComment, format)
-                .addObjectColumn("odsazení", DataTypeCode::getCharsIndent, format)
-                .addObjectColumn("whitespace", DataTypeCode::getCharsWhitespace, format)
-                .addObjectColumn("celkem", DataTypeCode::getCharsTotal, format);
-
-        // text při prázdné tabulce
-        table.setPlaceholder(new Text("Žádné položky"));
     }
 
     @Override
-    public Node getNode() {
+    public Node getNode(ResourceBundle resourceBundle) {
+        if (table.getColumns().isEmpty())
+            initTable(resourceBundle);
+
         return box;
+    }
+
+    private void initTable(ResourceBundle rb) {
+        // inicializace sloupců
+
+        Function<String, String> n = (key) -> rb.getString("summary/column/" + key);
+        Function<Number, String> format = (num) -> String.format("%,d ", num);
+
+        TableInitializer.of(table)
+            .addStringColumn(n.apply("type"), v -> " " + v.getFileType().getName())
+                    .init(c -> c.setStyle("-fx-alignment: center-left;"))
+            .addObjectColumn(n.apply("files"), DataTypeCode::getFiles, format)
+            .addObjectColumn(n.apply("size"), DataTypeCode::getSizeTotal, format)
+            .addInnerColumn(n.apply("lines"))
+                .addObjectColumn(n.apply("l-code"), DataTypeCode::getLinesCode, format)
+                .addObjectColumn(n.apply("l-comments"), DataTypeCode::getLinesComment, format)
+                .addObjectColumn(n.apply("l-empty"), DataTypeCode::getLinesEmpty, format)
+                .addObjectColumn(n.apply("l-total"), DataTypeCode::getLinesTotal, format)
+                        .init(c -> c.setSortType(TableColumn.SortType.DESCENDING))
+                        .init(c -> table.getSortOrder().add(0, c))
+            .addInnerColumn(n.apply("chars"))
+                .addObjectColumn(n.apply("c-comments"), DataTypeCode::getCharsComment, format)
+                .addObjectColumn(n.apply("c-indent"), DataTypeCode::getCharsIndent, format)
+                .addObjectColumn(n.apply("c-ws"), DataTypeCode::getCharsWhitespace, format)
+                .addObjectColumn(n.apply("c-total"), DataTypeCode::getCharsTotal, format);
+
+        // text při prázdné tabulce
+        table.setPlaceholder(new Text(rb.getString("summary/empty")));
     }
 
     @Override

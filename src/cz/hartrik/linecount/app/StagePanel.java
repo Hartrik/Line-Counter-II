@@ -2,12 +2,13 @@ package cz.hartrik.linecount.app;
 
 import cz.hartrik.linecount.analyze.DataTypeCode;
 import java.util.Collection;
+import java.util.ResourceBundle;
 import javafx.scene.Node;
 
 /**
  * Panel s prvky uživatelského rozhraní.
  *
- * @version 2015-09-10
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public interface StagePanel {
@@ -15,9 +16,10 @@ public interface StagePanel {
     /**
      * Vrátí komponentu.
      *
+     * @param rb resources
      * @return komponenta
      */
-    Node getNode();
+    Node getNode(ResourceBundle rb);
 
     /**
      * Povolí nebo zakáže úpravy. Ve výchozím stavu jsou úpravy povoleny. <p>

@@ -22,7 +22,7 @@ import javafx.scene.layout.*;
 /**
  * Controller
  *
- * @version 2015-09-10
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
@@ -37,7 +37,9 @@ public class StageContentController implements Initializable {
     private final ProgressBar progressBar = new ProgressBar();
     { progressBar.setPrefWidth(Integer.MAX_VALUE); }
 
-    private final CustomOutputManager outputManager = new CustomOutputManager();
+    private CustomOutputManager outputManager;
+
+    private ResourceBundle rb;
 
     // panely
 
@@ -57,10 +59,13 @@ public class StageContentController implements Initializable {
 
     @Override
     public void initialize(java.net.URL url, ResourceBundle rb) {
+        this.outputManager = new CustomOutputManager(rb);
+        this.rb = rb;
+
         initToggle();
         updatePanel();
 
-        bottomBox.getChildren().add(stagePanelInput.getNode());
+        bottomBox.getChildren().add(stagePanelInput.getNode(rb));
     }
 
     protected void initToggle() {
@@ -89,7 +94,7 @@ public class StageContentController implements Initializable {
         mainBox.getChildren().clear();
 
         Object data = toggleGroup.getSelectedToggle().getUserData();
-        Node node = ((StagePanel) data).getNode();
+        Node node = ((StagePanel) data).getNode(rb);
 
         mainBox.getChildren().add(node);
     }
@@ -103,9 +108,10 @@ public class StageContentController implements Initializable {
         if (!paths.isEmpty()) {
             SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
 
+            final String format = rb.getString("log/not-exists");
             FileFilter fileFilter = new FileFilter(
                     stagePanelInput.getFilter(),
-                    (p, e) -> stringConsumer.accept("Neexistující složka/soubor - " + p));
+                    (p, e) -> stringConsumer.accept(String.format(format, p)));
 
             Collection<Path> filtered = fileFilter.filter(paths);
 
@@ -120,7 +126,7 @@ public class StageContentController implements Initializable {
     }
 
     private void process(Collection<Path> paths, Consumer<String> consumer) {
-        LineCountProvider lineCountProvider = new LineCountProvider(consumer);
+        LineCountProvider lineCountProvider = new LineCountProvider(consumer, rb);
 
         Platform.runLater(() -> {
             enableEditing(false);
@@ -137,7 +143,8 @@ public class StageContentController implements Initializable {
             }
         });
 
-        consumer.accept("--- výsledný čas: " + stopWatch.getMillis() + " ms");
+        final String format = rb.getString("log/time");
+        consumer.accept(String.format(format, stopWatch.getMillis()));
 
         Platform.runLater(() -> {
             hideProgressBar();

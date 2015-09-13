@@ -3,13 +3,15 @@ package cz.hartrik.linecount.app;
 
 import cz.hartrik.common.ui.javafx.FXMLControlledStage;
 import java.nio.file.Path;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
-import javafx.stage.Window;
 
 /**
- * @version 2015-08-13
+ * Dialog pro tvorbu filtrů souborů.
+ *
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class FilterDialog
@@ -19,19 +21,12 @@ public class FilterDialog
     public static final String PATH_FXML = PACKAGE + "FilterDialog.fxml";
     public static final String PATH_ICON = PACKAGE + "icon - filter (16).png";
 
-    public static final String TITLE = "Filtrovat";
+    public FilterDialog(ResourceBundle resourceBundle) {
+        super(FilterDialog.class.getResource(PATH_FXML), resourceBundle);
 
-    public FilterDialog() {
-        this(null);
-    }
-
-    public FilterDialog(Window owner) {
-        super(FilterDialog.class.getResource(PATH_FXML));
-
-        setTitle(TITLE);
+        setTitle(resourceBundle.getString("dialog/filter/title"));
         setResizable(false);
         getIcons().add(new Image(PATH_ICON));
-        initOwner(owner);
         initModality(Modality.APPLICATION_MODAL);
     }
 

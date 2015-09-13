@@ -12,7 +12,7 @@
 
 <VBox fx:id="infoPanel" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.hartrik.linecount.app.StagePanelAboutController">
    <children>
-      <Label text="Počítač řádků II" VBox.vgrow="NEVER">
+      <Label text="%app-title" VBox.vgrow="NEVER">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -23,10 +23,10 @@
                <children>
                   <GridPane VBox.vgrow="NEVER">
                      <children>
-                        <Label text="Verze programu:" />
-                        <Label text="Datum vydání:" GridPane.rowIndex="1" />
-                        <Label text="1.2" GridPane.columnIndex="1" />
-                        <Label text="2015-09-08" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="%about/version" />
+                        <Label text="%about/version-date" GridPane.rowIndex="1" />
+                        <Label fx:id="labelVersion" text="-" GridPane.columnIndex="1" />
+                        <Label fx:id="labelVersionDate" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="117.0" minWidth="10.0" prefWidth="109.0" />

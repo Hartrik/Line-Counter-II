@@ -6,30 +6,28 @@ import cz.hartrik.linecount.analyze.supported.FileTypes;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
  * Vytváří statistiky počtu řádků, znaků atd...
  *
- * @version 2015-09-09
+ * @version 2015-09-13
  * @author Patrik Harag
  */
 public class LineCountProvider {
 
     private final Consumer<String> logConsumer;
+    private final ResourceBundle resourceBundle;
     private final Map<FileType, DataTypeCode> stats = new LinkedHashMap<>();
 
     private final UnknownFileAnalyzer unknownFileAnalyzer;
     private final TextFileAnalyzer textFileAnalyzer;
     private final SourceCodeAnalyzer sourceFileAnalyzer;
 
-    public LineCountProvider(Consumer<String> logConsumer) {
+    public LineCountProvider(Consumer<String> logConsumer, ResourceBundle rb) {
         this.logConsumer = logConsumer;
+        this.resourceBundle = rb;
 
         this.unknownFileAnalyzer = new UnknownFileAnalyzer();
         this.textFileAnalyzer    = new TextFileAnalyzer();
@@ -41,24 +39,25 @@ public class LineCountProvider {
     }
 
     public void analyze(Path... paths) {
-        analyze(Arrays.asList(paths));
+        for (Path path : paths)
+            consumePath(path);
     }
 
     public void analyze(Collection<Path> paths) {
-        for (Path path : paths) {
+        for (Path path : paths)
             consumePath(path);
-        }
     }
 
-    protected void consumeLog(String message) {
-        logConsumer.accept(message);
+    protected void log(String key, Object... params) {
+        String format = resourceBundle.getString(key);
+        logConsumer.accept(String.format(format, params));
     }
 
     protected void consumePath(Path path) {
         if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
 
             if (!Files.isReadable(path)) {
-                consumeLog("Soubor není určen ke čtení - " + path.toString());
+                log("log/not-readable", path);
                 return;
             }
 
@@ -67,10 +66,10 @@ public class LineCountProvider {
             doAnalysis(path, typeData);
 
         } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-            consumeLog("Cesta ukazuje na adresář - " + path.toString());
+            log("log/not-file", path);
 
         } else if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
-            consumeLog("Neexistující složka/soubor - " + path.toString());
+            log("log/not-exists", path);
         }
     }
 
@@ -82,7 +81,7 @@ public class LineCountProvider {
                 : Optional.empty();
 
         if (!found.isPresent())
-            consumeLog("Soubor neznámého typu - " + path.toString());
+            log("log/not-supported", path);
 
         return found.orElse(FileTypes.OTHER);
     }
@@ -115,10 +114,10 @@ public class LineCountProvider {
                 typeData.addCharsWhitespace(data.getCharsWhitespace());
 
             } else {
-                consumeLog("Nepodporované kódování - " + path.toString());
+                log("log/unknown-encoding", path);
             }
         } catch (Exception e) {
-            consumeLog("Chyba při čtení souboru - " + path.toString());
+            log("log/io-error", path);
         }
     }
 

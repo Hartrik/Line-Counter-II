@@ -18,7 +18,7 @@
          <children>
             <VBox spacing="10.0" VBox.vgrow="NEVER">
                <children>
-                  <Label styleClass="title-small" text="Regulární výraz:">
+                  <Label styleClass="title-small" text="%dialog/filter/header">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font></Label>
@@ -29,15 +29,15 @@
                   </TextField>
                   <HBox spacing="20.0">
                      <children>
-                        <Label text="Aplikovat na:" />
+                        <Label text="%dialog/filter/apply" />
                         <VBox spacing="10.0">
                            <children>
-                              <RadioButton mnemonicParsing="false" selected="true" text="Název souboru">
+                              <RadioButton mnemonicParsing="false" selected="true" text="%dialog/filter/apply/file-name">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="group1" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="rbAbsolutePath" mnemonicParsing="false" text="Absolutní cestu k souboru" toggleGroup="$group1" />
+                              <RadioButton fx:id="rbAbsolutePath" mnemonicParsing="false" text="%dialog/filter/apply/path" toggleGroup="$group1" />
                            </children>
                         </VBox>
                      </children>
@@ -46,8 +46,8 @@
             </VBox>
             <HBox alignment="BOTTOM_CENTER" spacing="10.0" VBox.vgrow="NEVER">
                <children>
-                  <Button mnemonicParsing="false" onAction="#okButton" prefHeight="25.0" prefWidth="77.0" text="Ok" />
-                  <Button cancelButton="true" layoutX="202.0" layoutY="30.0" mnemonicParsing="false" onAction="#cancelButton" prefHeight="25.0" prefWidth="77.0" text="Zrušit" />
+                  <Button mnemonicParsing="false" onAction="#okButton" prefHeight="25.0" prefWidth="77.0" text="%dialog/filter/button/ok" />
+                  <Button cancelButton="true" layoutX="202.0" layoutY="30.0" mnemonicParsing="false" onAction="#cancelButton" prefHeight="25.0" prefWidth="77.0" text="%dialog/filter/button/cancel" />
                </children>
             </HBox>
          </children>

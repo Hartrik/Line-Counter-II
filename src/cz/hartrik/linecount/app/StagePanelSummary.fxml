@@ -13,8 +13,8 @@
    <children>
       <HBox alignment="CENTER">
          <children>
-            <PieChart fx:id="chartFiles" title="Poměr podle počtu souborů" />
-            <PieChart fx:id="chartLines" title="Poměr podle počtu řádků" />
+            <PieChart fx:id="chartFiles" title="%charts/chart-files" />
+            <PieChart fx:id="chartLines" title="%charts/chart-lines" />
          </children>
       </HBox>
    </children>
