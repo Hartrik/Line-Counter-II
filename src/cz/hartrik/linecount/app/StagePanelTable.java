@@ -48,7 +48,7 @@ public class StagePanelTable implements StagePanel {
     private void initTable(ResourceBundle rb) {
         // inicializace sloupců
 
-        Function<String, String> n = (key) -> rb.getString("summary/column/" + key);
+        Function<String, String> n = (key) -> rb.getString("table/column/" + key);
         Function<Number, String> format = (num) -> String.format("%,d ", num);
 
         TableInitializer.of(table)
@@ -70,7 +70,7 @@ public class StagePanelTable implements StagePanel {
                 .addObjectColumn(n.apply("c-total"), DataTypeCode::getCharsTotal, format);
 
         // text při prázdné tabulce
-        table.setPlaceholder(new Text(rb.getString("summary/empty")));
+        table.setPlaceholder(new Text(rb.getString("table/empty")));
     }
 
     @Override
@@ -86,6 +86,10 @@ public class StagePanelTable implements StagePanel {
 
     public List<DataTypeCode> getData() {
         return Collections.unmodifiableList(table.getItems());
+    }
+
+    protected TableView<DataTypeCode> getTable() {
+        return table;
     }
 
 }

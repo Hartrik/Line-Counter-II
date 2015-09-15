@@ -22,7 +22,7 @@
                     <items>
                       <Button fx:id="buttonStart" defaultButton="true" mnemonicParsing="false" onAction="#count" prefWidth="80.0" text="%toolbar/count" />
                         <Separator prefWidth="30.0" visible="false" />
-                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" text="%toolbar/summary">
+                        <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" text="%toolbar/table">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
@@ -38,7 +38,13 @@
                         <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="%toolbar/log" toggleGroup="$toggleGroup" />
                         <ToggleButton mnemonicParsing="false" prefWidth="80.0" text="%toolbar/about" toggleGroup="$toggleGroup" />
                         <Separator layoutX="94.0" layoutY="10.0" prefWidth="30.0" visible="false" />
-                        <Button fx:id="buttonOut" mnemonicParsing="false" onAction="#showScriptDialog" prefWidth="80.0" text="%toolbar/out" />
+                        <MenuButton fx:id="buttonOut" alignment="CENTER" mnemonicParsing="false" prefWidth="80.0" text="%toolbar/out">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#saveTableAsImage" text="%toolbar/out/save-table" />
+                              <MenuItem mnemonicParsing="false" onAction="#saveTableAsHTML" text="%toolbar/out/save-html" />
+                              <MenuItem mnemonicParsing="false" onAction="#showScriptDialog" text="%toolbar/out/script" />
+                           </items>
+                        </MenuButton>
                     </items>
                      <VBox.margin>
                         <Insets />

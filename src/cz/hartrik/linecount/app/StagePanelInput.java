@@ -42,7 +42,7 @@ public class StagePanelInput implements StagePanel {
         if (box == null) {
             filterManager = new FilterManager(resourceBundle);
             fileChooserManager = new FileChooserManager(
-                    resourceBundle.getString("dialog/fc-import/title"));
+                    resourceBundle.getString("dialog/fc/import/title"));
 
             box = createBox(resourceBundle);
             DragAndDropInitializer.initFileDragAndDrop(inputArea, this::addPaths);

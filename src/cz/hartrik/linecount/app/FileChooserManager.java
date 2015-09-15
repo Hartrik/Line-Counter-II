@@ -30,10 +30,10 @@ public class FileChooserManager {
     }
 
     /**
-     * Nastaví výchozí adresář podle posledního vybraného soubou. Uživatel se
+     * Nastaví výchozí adresář podle posledního vybraného souboru. Uživatel se
      * tak nebude muset vícekrát proklikávat na stejné místo.
      *
-     * @param lastSelected poslední vybramé soubory
+     * @param lastSelected poslední vybrané soubory
      */
     protected void updateInitalDirectory(List<File> lastSelected) {
         if (lastSelected == null || lastSelected.isEmpty()) return;

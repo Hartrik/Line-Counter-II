@@ -1,5 +1,5 @@
 
-package cz.hartrik.linecount.app;
+package cz.hartrik.linecount.app.out;
 
 import cz.hartrik.common.io.Resources;
 import cz.hartrik.jfxeditor.CodeEditor;
@@ -27,7 +27,7 @@ public class CustomOutputManager {
 
     private ScriptDialog scriptDialog = null;
 
-    private final  ResourceBundle resourceBundle;
+    private final ResourceBundle resourceBundle;
 
     public CustomOutputManager(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;

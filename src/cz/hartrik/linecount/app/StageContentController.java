@@ -6,6 +6,7 @@ import cz.hartrik.linecount.analyze.DataTypeCode;
 import cz.hartrik.linecount.analyze.FileFilter;
 import cz.hartrik.linecount.analyze.LineCountProvider;
 import cz.hartrik.linecount.analyze.SimpleStringConsumer;
+import cz.hartrik.linecount.app.out.OutputManager;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -28,7 +29,7 @@ import javafx.scene.layout.*;
 public class StageContentController implements Initializable {
 
     @FXML private Button buttonStart;
-    @FXML private Button buttonOut;
+    @FXML private MenuButton buttonOut;
 
     @FXML private ToggleGroup toggleGroup;
     @FXML private HBox mainBox;
@@ -37,7 +38,7 @@ public class StageContentController implements Initializable {
     private final ProgressBar progressBar = new ProgressBar();
     { progressBar.setPrefWidth(Integer.MAX_VALUE); }
 
-    private CustomOutputManager outputManager;
+    private OutputManager outputManager;
 
     private ResourceBundle rb;
 
@@ -58,14 +59,15 @@ public class StageContentController implements Initializable {
     // --- inicializace
 
     @Override
-    public void initialize(java.net.URL url, ResourceBundle rb) {
-        this.outputManager = new CustomOutputManager(rb);
-        this.rb = rb;
+    public void initialize(java.net.URL url, ResourceBundle resourceBundle) {
+        this.rb = resourceBundle;
+        this.outputManager = new OutputManager(
+                resourceBundle, () -> mainBox.getScene().getWindow());
 
         initToggle();
         updatePanel();
 
-        bottomBox.getChildren().add(stagePanelInput.getNode(rb));
+        bottomBox.getChildren().add(stagePanelInput.getNode(resourceBundle));
     }
 
     protected void initToggle() {
@@ -86,8 +88,15 @@ public class StageContentController implements Initializable {
     // --- metody
 
     @FXML protected void showScriptDialog() {
-        outputManager.showOutputDialog(
-                bottomBox.getScene().getWindow(), stagePanelTable.getData());
+        outputManager.showScriptDialog(stagePanelTable.getData());
+    }
+
+    @FXML protected void saveTableAsImage() {
+        outputManager.saveAsImage(stagePanelTable.getNode(rb));
+    }
+
+    @FXML protected void saveTableAsHTML() {
+        outputManager.saveAsHTML(stagePanelTable.getTable());
     }
 
     @FXML protected void updatePanel() {
