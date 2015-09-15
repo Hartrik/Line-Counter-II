@@ -67,6 +67,11 @@ public class Main extends Application {
         stage.getIcons().add(new Image(
                 getClass().getResourceAsStream(FILE_FRAME_ICON)));
 
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);  // zastaví ostatní vlákna
+        });
+
         stage.show();
     }
 
