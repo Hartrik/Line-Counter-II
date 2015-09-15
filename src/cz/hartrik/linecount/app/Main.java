@@ -21,13 +21,13 @@ import javafx.stage.Stage;
 /**
  * Vstupní třída
  *
- * @version 2015-09-13
+ * @version 2015-09-15
  * @author Patrik Harag
  */
 public class Main extends Application {
 
-    public static final String APP_VERSION = "1.2";
-    public static final String APP_VERSION_DATE = "2015-09-08";
+    public static final String APP_VERSION = "1.3";
+    public static final String APP_VERSION_DATE = "2015-09-15";
 
     static final String FILE_FXML = "StageContent.fxml";
     static final String FILE_FRAME_ICON = "icon - text (32).png";
