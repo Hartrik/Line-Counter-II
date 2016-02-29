@@ -10,7 +10,7 @@ import javafx.stage.Window;
 /**
  * Vyvolává dialog pro filtrování, spravuje nastavení.
  *
- * @version 2015-09-13
+ * @version 2016-02-28
  * @author Patrik Harag
  */
 public class FilterManager {
@@ -26,12 +26,10 @@ public class FilterManager {
 
     public void showDialog(Window window) {
         if (filterDialog == null) {
-            filterDialog = new FilterDialog(resourceBundle);
-            filterDialog.initOwner(window);
+            filterDialog = new FilterDialog(resourceBundle, window);
         }
 
-        filterDialog.showAndWait();
-        predicate = filterDialog.getPredicate();
+        filterDialog.showAndWait().ifPresent(p -> this.predicate = p);
     }
 
     public Predicate<Path> getPredicate() {
