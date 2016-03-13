@@ -23,7 +23,7 @@ import javafx.scene.layout.*;
 /**
  * Controller
  *
- * @version 2015-09-13
+ * @version 2016-03-13
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
@@ -89,6 +89,12 @@ public class StageContentController implements Initializable {
 
     @FXML protected void showScriptDialog() {
         outputManager.showScriptDialog(stagePanelTable.getData());
+    }
+
+    @FXML protected void showOptions() {
+        ConfigDialog dialog = new ConfigDialog(rb);
+        dialog.initOwner(mainBox.getScene().getWindow());
+        dialog.showAndWait();
     }
 
     @FXML protected void saveTableAsImage() {
@@ -179,7 +185,7 @@ public class StageContentController implements Initializable {
     }
 
     private void showResults(Collection<DataTypeCode> results, String log) {
-        Arrays.stream(panels).forEach((p) -> p.showResults(results, log));
+        Arrays.stream(panels).forEach(p -> p.showResults(results, log));
     }
 
     private void clear() {

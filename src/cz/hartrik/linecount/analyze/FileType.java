@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 /**
  * Rozhraní pro typ souboru.
  *
- * @version 2015-09-05
+ * @version 2016-02-28
  * @author Patrik Harag
  */
 public interface FileType {
@@ -36,6 +36,15 @@ public interface FileType {
     String getName();
 
     /**
+     * Vrátí informaci o druhu tohoto typu souboru.
+     *
+     * @see #isTextDocument()
+     * @see #isSourceCode()
+     * @return DataType
+     */
+    DataType getDataType();
+
+    /**
      * Vrátí {@code true}, pokud je tento typ souboru považován za zdrojový
      * kód. To bude mít za následek počítání komentářů atd...
      *
@@ -48,7 +57,6 @@ public interface FileType {
      * Vrátí {@code true}, pokud je tento typ souboru považován za textový
      * dokument. To bude mít za následek počítání řádků atd...
      *
-     * @see #isSourceCode() isSourceCode()
      * @see TextFileAnalyzer
      * @see SourceCodeAnalyzer
      * @return boolean

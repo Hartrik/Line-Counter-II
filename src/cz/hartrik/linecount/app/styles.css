@@ -1,0 +1,57 @@
+/*
+ * Author: Patrik Harag
+ */
+
+.root {
+    -fx-font-size: 12px;
+}
+
+.title {
+    -fx-font-weight: bold;
+}
+
+/* toolbar */
+
+.separator {
+    visibility: hidden;
+    -fx-pref-width: 30;
+}
+
+.segmented-button-left {
+    -fx-background-radius: 3 0 0 3, 3 0 0 3, 3 0 0 3;
+}
+
+.segmented-button-center {
+    -fx-background-radius: 0;
+}
+
+.segmented-button-right {
+    -fx-background-radius: 0 3 3 0, 0 3 3 0, 0 3 3 0;
+}
+
+/* panel s tabulkou */
+
+.table-view {
+
+}
+
+.table-cell {
+    -fx-alignment: center-right;
+}
+
+/* panel s grafy */
+
+/* panel s logy, vstupní textové pole */
+
+.text-area {
+    -fx-font-size: 11px;
+    -fx-font-family: "Monospace";
+}
+
+/* panel s informacemi */
+
+.web-view-box {
+    -fx-border-color: #cccccc;
+    -fx-border-style: solid;
+    -fx-border-width: 1px 0px 1px 0px;
+}

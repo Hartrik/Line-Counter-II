@@ -16,24 +16,30 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * @version 2015-09-05
+ * Parsuje dokument se styly komentářů.
+ *
+ * @version 2016-02-28
  * @author Patrik Harag
  */
 public class CommentStylesXMLParser extends XMLParserBase {
 
+    /**
+     * Schéma definující strukturu dokumentu.
+     * Slouží k validaci.
+     */
     public static final URL XSD_URL =
             CommentStylesXMLParser.class.getResource("comment styles.xsd");
 
-    static final String TAG_ROOT = "comment-styles";
-    static final String TAG_COMMENT_STYLE = "comment-style";
-    static final String TAG_COMMENT = "comment";
-    static final String TAG_IGNORE = "ignore";
+    public static final String TAG_ROOT = "comment-styles";
+    public static final String TAG_COMMENT_STYLE = "comment-style";
+    public static final String TAG_COMMENT = "comment";
+    public static final String TAG_IGNORE = "ignore";
 
-    static final String ARGUMENT_STYLE_NAME = "name";
+    public static final String ARGUMENT_STYLE_NAME = "name";
 
-    static final String ARGUMENT_REGEX_START = "start";
-    static final String ARGUMENT_REGEX_END = "end";
-    static final String ARGUMENT_REGEX_END_DEF = "(?m)$";
+    public static final String ARGUMENT_REGEX_START = "start";
+    public static final String ARGUMENT_REGEX_END = "end";
+    public static final String ARGUMENT_REGEX_END_DEF = "(?m)$";
 
     /**
      * Načte styly komentářů z XML souboru. Předpokládá správně formátovaný

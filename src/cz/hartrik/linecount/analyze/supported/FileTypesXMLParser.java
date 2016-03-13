@@ -20,7 +20,7 @@ import org.xml.sax.SAXException;
 /**
  * Slouží k parsování podporovaných typů souborů z XML dokumentu.
  *
- * @version 2015-09-05
+ * @version 2016-02-28
  * @author Patrik Harag
  */
 public class FileTypesXMLParser extends XMLParserBase {
@@ -28,14 +28,14 @@ public class FileTypesXMLParser extends XMLParserBase {
     public static final URL XSD_URL =
             CommentStylesXMLParser.class.getResource("file types.xsd");
 
-    static final String TAG_ROOT = "file-types";
-    static final String TAG_FILE_TYPE = "file-type";
-    static final String ARGUMENT_FT_NAME = "name";
-    static final String ARGUMENT_FT_TYPE = "type";
-    static final String ARGUMENT_FT_COMMENT_STYLE = "comment-style";
+    public static final String TAG_ROOT = "file-types";
+    public static final String TAG_FILE_TYPE = "file-type";
+    public static final String ARGUMENT_FT_NAME = "name";
+    public static final String ARGUMENT_FT_TYPE = "type";
+    public static final String ARGUMENT_FT_COMMENT_STYLE = "comment-style";
 
-    static final String TAG_FILE_TYPE_FILTER = "filter";
-    static final String ARGUMENT_FT_FILTER_REGEX = "regex";
+    public static final String TAG_FILE_TYPE_FILTER = "filter";
+    public static final String ARGUMENT_FT_FILTER_REGEX = "regex";
 
     private final Function<String, CommentStyle> commentStylesSupplier;
 
@@ -106,7 +106,25 @@ public class FileTypesXMLParser extends XMLParserBase {
         String regex = element.getAttribute(ARGUMENT_FT_FILTER_REGEX);
 
         final Pattern pattern = Pattern.compile(regex);
-        return (fileName) -> pattern.matcher(fileName).matches();
+        return new Filter(pattern);
+    }
+
+    private static class Filter implements Predicate<String> {
+        private final Pattern pattern;
+
+        private Filter(Pattern pattern) {
+            this.pattern = pattern;
+        }
+
+        @Override
+        public boolean test(String text) {
+            return pattern.matcher(text).matches();
+        }
+
+        @Override
+        public String toString() {
+            return pattern.pattern();
+        }
     }
 
 }

@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 /**
  * Spravuje panel s tabulkou.
  *
- * @version 2015-09-13
+ * @version 2016-02-27
  * @author Patrik Harag
  */
 public class StagePanelTable implements StagePanel {
@@ -34,7 +34,7 @@ public class StagePanelTable implements StagePanel {
         table.setPrefWidth(Integer.MAX_VALUE);
 
         HBox.setHgrow(table, Priority.ALWAYS);
-        HBox.setMargin(table, new Insets(-1, -2, -1, -1));
+        HBox.setMargin(table, new Insets(10));
     }
 
     @Override

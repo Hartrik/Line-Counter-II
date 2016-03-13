@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 /**
  *
- * @version 2015-09-05
+ * @version 2016-02-28
  * @author Patrik Harag
  */
 class FileTypeImpl implements FileType {
@@ -38,6 +38,11 @@ class FileTypeImpl implements FileType {
     @Override
     public List<Predicate<String>> getFilters() {
         return Collections.unmodifiableList(filters);
+    }
+
+    @Override
+    public DataType getDataType() {
+        return dataType;
     }
 
     @Override
