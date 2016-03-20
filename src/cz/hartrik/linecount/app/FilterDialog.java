@@ -2,13 +2,13 @@
 package cz.hartrik.linecount.app;
 
 import cz.hartrik.common.Exceptions;
+import cz.hartrik.common.io.Resources;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -20,13 +20,12 @@ import javafx.stage.Window;
  * Dialog pro tvorbu filtrů souborů.
  * Tento dialog je připraven na opakované použití.
  *
- * @version 2016-02-29
+ * @version 2016-03-20
  * @author Patrik Harag
  */
 public class FilterDialog extends Dialog<Predicate<Path>> {
 
-    private static final String PACKAGE = "/cz/hartrik/linecount/app/";
-    public static final String PATH_ICON = PACKAGE + "icon - filter (16).png";
+    public static final String ICON_NAME = "icon - filter (16).png";
 
     private TextField tfRegex;
     private ToggleGroup toggleGroup;
@@ -44,7 +43,7 @@ public class FilterDialog extends Dialog<Predicate<Path>> {
 
         initOwner(owner);  // musí být nastaven před nastavením ikony
         Stage stage = (Stage) getDialogPane().getScene().getWindow();
-        stage.getIcons().setAll(new Image(PATH_ICON));
+        stage.getIcons().setAll(Resources.image(ICON_NAME, getClass()));
 
         setOnShowing((e) -> commit());
 

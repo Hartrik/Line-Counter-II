@@ -3,43 +3,42 @@ package cz.hartrik.linecount.app;
 
 import cz.hartrik.common.io.NioUtil;
 import java.io.File;
-import java.util.List;
-import javafx.stage.FileChooser;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 
 /**
  * Nastavuje a vyvolává file chooser.
  *
- * @version 2015-09-13
+ * @version 2016-03-20
  * @author Patrik Harag
  */
 public class FileChooserManager {
 
-    private final FileChooser chooser;
+    private final DirectoryChooser chooser;
 
     public FileChooserManager(String title) {
-        chooser = new FileChooser();
+        chooser = new DirectoryChooser();
         chooser.setTitle(title);
         chooser.setInitialDirectory(NioUtil.workingDirectory().toFile());
     }
 
-    public List<File> showDialog(Window window) {
-        List<File> files = chooser.showOpenMultipleDialog(window);
-        updateInitalDirectory(files);
-        return files;
+    public File showDialog(Window window) {
+        File file = chooser.showDialog(window);
+        updateInitalDirectory(file);
+        return file;
     }
 
     /**
      * Nastaví výchozí adresář podle posledního vybraného souboru. Uživatel se
      * tak nebude muset vícekrát proklikávat na stejné místo.
      *
-     * @param lastSelected poslední vybrané soubory
+     * @param lastSelected poslední vybraný soubor nebo složka
      */
-    protected void updateInitalDirectory(List<File> lastSelected) {
-        if (lastSelected == null || lastSelected.isEmpty()) return;
+    protected void updateInitalDirectory(File lastSelected) {
+        if (lastSelected == null) return;
 
-        File lastDir = lastSelected.get(lastSelected.size() - 1).getParentFile();
-        chooser.setInitialDirectory(lastDir);
+        File parent = lastSelected.getParentFile();
+        chooser.setInitialDirectory(parent);
     }
 
 }

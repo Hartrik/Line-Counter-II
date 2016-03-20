@@ -65,8 +65,9 @@ public class StageContentController implements Initializable {
                 resourceBundle, () -> mainBox.getScene().getWindow());
 
         initToggle();
-        updatePanel();
+        updatePanel();  // zobrazení výchozího panelu
 
+        // zobrazení panelu se vstupem
         bottomBox.getChildren().add(stagePanelInput.getNode(resourceBundle));
     }
 

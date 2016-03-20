@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ import javafx.scene.layout.VBox;
 /**
  * Panel se vstupním polem. Také se stará o filtry.
  *
- * @version 2015-09-13
+ * @version 2015-03-20
  * @author Patrik Harag
  */
 public class StagePanelInput implements StagePanel {
@@ -103,7 +104,8 @@ public class StagePanelInput implements StagePanel {
     }
 
     public void showFileChooser() {
-        addFiles(fileChooserManager.showDialog(inputArea.getScene().getWindow()));
+        File file = fileChooserManager.showDialog(inputArea.getScene().getWindow());
+        addFiles(Collections.singleton(file));
     }
 
     public Stream<String> getPaths() {
