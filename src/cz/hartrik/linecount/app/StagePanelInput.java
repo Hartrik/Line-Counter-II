@@ -4,10 +4,7 @@ import cz.hartrik.common.io.Resources;
 import cz.hartrik.common.ui.javafx.DragAndDropInitializer;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -105,7 +102,8 @@ public class StagePanelInput implements StagePanel {
 
     public void showFileChooser() {
         File file = fileChooserManager.showDialog(inputArea.getScene().getWindow());
-        addFiles(Collections.singleton(file));
+        if (file != null)
+            addFiles(Collections.singleton(file));
     }
 
     public Stream<String> getPaths() {
@@ -123,9 +121,14 @@ public class StagePanelInput implements StagePanel {
         if (files == null || files.isEmpty())
             return;
 
-        inputArea.setText(Stream
-                .concat(getPaths(), files.stream().map(File::getAbsolutePath))
-                .collect(Collectors.joining("\n")));
+        Stream<String> oldPaths = getPaths();
+        Stream<String> newPaths = files.stream().map(File::getAbsolutePath);
+
+        String text = Stream.concat(oldPaths, newPaths)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\n"));
+
+        inputArea.setText(text);
     }
 
 }
