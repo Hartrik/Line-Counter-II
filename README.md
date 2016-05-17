@@ -26,6 +26,8 @@ Podporované jazyky: C, C++, C#, Clojure, CSS, Erlang, Groovy, HTML, Java, JavaS
   - **whitespace** – součet veškerých "bílých znaků"
   - **celkem** – součet veškerých znaků (včetně whitespace)
 
+![Preview](https://cloud.githubusercontent.com/assets/6131815/9882226/de6347f6-5bd3-11e5-8f9e-1fe4f89ab6d7.png)
+
 *Tip: Kliknutím do záhlaví se obsah seřadí podle hodnot ve sloupce.*
 
 ## Filtrování souborů
