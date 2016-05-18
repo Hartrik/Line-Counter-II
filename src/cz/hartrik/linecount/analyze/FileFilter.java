@@ -2,8 +2,8 @@ package cz.hartrik.linecount.analyze;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -13,13 +13,16 @@ import java.util.function.Predicate;
 /**
  * Stará se o filtrování souborů.
  *
- * @version 2015-09-09
+ * @version 2016-05-18
  * @author Patrik Harag
  */
 public class FileFilter {
 
     private final Predicate<Path> filter;
     private final BiConsumer<Path, IOException> errConsumer;
+
+    private int passed;
+    private int failed;
 
     public FileFilter(Predicate<Path> filter) {
         this(filter, (path, e) -> {});
@@ -34,16 +37,12 @@ public class FileFilter {
 
     // ---
 
-    public Set<Path> filter(Path... paths) {
-        return filter(Arrays.asList(paths));
-    }
-
     /**
      * Rekurzivně navštíví všechny složky a soubory a ty, které projdou testem
      * uloží do množiny.
      *
      * @param paths cesty k souborům nebo složkám
-     * @return filtrovaná množina složek a souborů
+     * @return filtrovaná množina souborů
      */
     public Set<Path> filter(Collection<Path> paths) {
         Set<Path> filtered = new LinkedHashSet<>();
@@ -65,7 +64,35 @@ public class FileFilter {
     }
 
     private boolean test(Path path) {
-        return filter.test(path);
+        if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+            return false;
+
+        boolean result = filter.test(path);
+
+        if (result)
+            passed++;
+        else
+            failed++;
+
+        return result;
+    }
+
+    /**
+     * Vrátí počet souborů, které prošly testem.
+     *
+     * @return počet souborů
+     */
+    public int getPassed() {
+        return passed;
+    }
+
+    /**
+     * Vrátí počet souborů, které neprošly testem.
+     *
+     * @return počet souborů
+     */
+    public int getFailed() {
+        return failed;
     }
 
 }

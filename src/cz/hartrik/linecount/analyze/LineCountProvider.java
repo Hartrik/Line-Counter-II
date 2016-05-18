@@ -1,152 +1,99 @@
-
 package cz.hartrik.linecount.analyze;
 
-import cz.hartrik.linecount.analyze.load.TextLoaders;
-import cz.hartrik.linecount.analyze.supported.FileTypes;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
+import cz.hartrik.common.reflect.StopWatch;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
- * Vytváří statistiky počtu řádků, znaků atd...
+ * Zatímco {@link LineCounter} provádí jen analýzu jednotlivých souborů,
+ * tato třída je určena pro dávkové zpracování.
+ * Rekurzivně prochází složky a umožňuje filtrování, do logu přidává souhrnné
+ * statistiky.
  *
- * @version 2015-09-13
+ * @version 2016-05-18
  * @author Patrik Harag
  */
 public class LineCountProvider {
 
-    private final Consumer<String> logConsumer;
-    private final ResourceBundle resourceBundle;
-    private final Map<FileType, DataTypeCode> stats = new LinkedHashMap<>();
+    private final ResourceBundle rb;
 
-    private final UnknownFileAnalyzer unknownFileAnalyzer;
-    private final TextFileAnalyzer textFileAnalyzer;
-    private final SourceCodeAnalyzer sourceFileAnalyzer;
+    private Predicate<Path> filter = (p) -> true;
+    private Consumer<Path> onAnalyzed = (p) -> {};
 
-    public LineCountProvider(Consumer<String> logConsumer, ResourceBundle rb) {
-        this.logConsumer = logConsumer;
-        this.resourceBundle = rb;
-
-        this.unknownFileAnalyzer = new UnknownFileAnalyzer();
-        this.textFileAnalyzer    = new TextFileAnalyzer();
-        this.sourceFileAnalyzer  = new SourceCodeAnalyzer();
+    public LineCountProvider(ResourceBundle rb) {
+        this.rb = rb;
     }
 
-    public void analyze(Path path) {
-        consumePath(path);
-    }
+    /**
+     * Analyzuje soubory a podrobnosti vypíše do logu.
+     *
+     * @param paths cesty k souborům a složkám, budou rekurzivně prohledány
+     * @param logConsumer přebírá logy
+     * @return statistiky
+     */
+    public Map<FileType, DataTypeCode> process(
+            Collection<Path> paths, Consumer<String> logConsumer) {
 
-    public void analyze(Path... paths) {
-        for (Path path : paths)
-            consumePath(path);
-    }
+        FileFilter fileFilter = initFilter(logConsumer);
+        Collection<Path> filteredPaths = fileFilter.filter(paths);
 
-    public void analyze(Collection<Path> paths) {
-        for (Path path : paths)
-            consumePath(path);
-    }
+        LineCounter counter = new LineCounter(logConsumer, rb);
 
-    protected void log(String key, Object... params) {
-        String format = resourceBundle.getString(key);
-        logConsumer.accept(String.format(format, params));
-    }
-
-    protected void consumePath(Path path) {
-        if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
-
-            if (!Files.isReadable(path)) {
-                log("log/not-readable", path);
-                return;
+        StopWatch stopWatch = StopWatch.measure(() -> {
+            for (Path path : filteredPaths) {
+                counter.analyze(path);
+                onAnalyzed.accept(path);
             }
+        });
 
-            FileType type = detectFileType(path);
-            DataTypeCode typeData = getData(type);
-            doAnalysis(path, typeData);
+        logConsumer.accept(rb.getString("log/separator"));
 
-        } else if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-            log("log/not-file", path);
+        String filesTotalFormat = rb.getString("log/files");
+        int filesTotal = fileFilter.getPassed()+ fileFilter.getFailed();
+        logConsumer.accept(String.format(filesTotalFormat, filesTotal));
 
-        } else if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
-            log("log/not-exists", path);
-        }
+        String failedFormat = rb.getString("log/files-filtered");
+        logConsumer.accept(String.format(failedFormat, fileFilter.getFailed()));
+
+        String passedFormat = rb.getString("log/files-analyzed");
+        logConsumer.accept(String.format(passedFormat, fileFilter.getPassed()));
+
+        String tFormat = rb.getString("log/time");
+        logConsumer.accept(String.format(tFormat, stopWatch.getMillis()));
+
+        return counter.getStats();
     }
 
-    protected FileType detectFileType(Path path) {
-        String fileName = path.getFileName().toString();
+    protected FileFilter initFilter(Consumer<String> logConsumer) {
+        String format = rb.getString("log/not-exists");
+        FileFilter fileFilter = new FileFilter(
+                filter,
+                (p, e) -> logConsumer.accept(String.format(format, p)));
 
-        Optional<FileType> found = (fileName.contains("."))
-                ? FileTypes.find(fileName)
-                : Optional.empty();
-
-        if (!found.isPresent())
-            log("log/not-supported", path);
-
-        return found.orElse(FileTypes.OTHER);
+        return fileFilter;
     }
 
-    protected void doAnalysis(Path path, DataTypeCode typeData) {
-        final FileType fileType = typeData.getFileType();
-
-        @SuppressWarnings("unchecked")
-        final FileAnalyzer<DataTypeFile> analyzer =
-                (FileAnalyzer<DataTypeFile>) getAnalyzer(fileType);
-
-        try {
-            Optional<DataTypeCode> o = TextLoaders.getDefaultGuessLoader().load(
-                    (l) -> analyzer.analyze(path, fileType, l, DataTypeCode::new));
-
-            if (o.isPresent()) {
-                DataTypeCode data = o.get();
-
-                typeData.addFiles(data.getFiles());
-                typeData.addSizeTotal(data.getSizeTotal());
-
-                typeData.addLinesTotal(data.getLinesTotal());
-                typeData.addLinesCode(data.getLinesCode());
-                typeData.addLinesComment(data.getLinesComment());
-                typeData.addLinesEmpty(data.getLinesEmpty());
-
-                typeData.addCharsTotal(data.getCharsTotal());
-                typeData.addCharsIndent(data.getCharsIndent());
-                typeData.addCharsComment(data.getCharsComment());
-                typeData.addCharsWhitespace(data.getCharsWhitespace());
-
-            } else {
-                log("log/unknown-encoding", path);
-            }
-        } catch (Exception e) {
-            log("log/io-error", path);
-        }
+    /**
+     * Nastaví posluchače, který je volán po každém zpracovaném souboru
+     * (úspěšně i neúspěšně).
+     *
+     * @param onAnalyzed posluchač
+     */
+    public void setOnAnalyzed(Consumer<Path> onAnalyzed) {
+        this.onAnalyzed = onAnalyzed;
     }
 
-    protected FileAnalyzer<? extends DataTypeFile> getAnalyzer(FileType type) {
-        if (type.isSourceCode())
-            return sourceFileAnalyzer;
-        else if (type.isTextDocument())
-            return textFileAnalyzer;
-        else
-            return unknownFileAnalyzer;
-    }
-
-    protected DataTypeCode getData(FileType type) {
-        if (!stats.containsKey(type)) {
-            // nová položka
-            DataTypeCode typeData = new DataTypeCode(type);
-            stats.put(type, typeData);
-            return typeData;
-
-        } else {
-            // stávající položka
-            return stats.get(type);
-        }
-    }
-
-    // gettery
-
-    public Map<FileType, DataTypeCode> getStats() {
-        return stats;
+    /**
+     * Nastaví filtr. Co neprojde filtrem, nebude dále zpracováváno.
+     *
+     * @param filter filtr
+     */
+    public void setFilter(Predicate<Path> filter) {
+        this.filter = filter;
     }
 
 }

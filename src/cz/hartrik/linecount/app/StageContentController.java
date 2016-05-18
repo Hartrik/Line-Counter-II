@@ -1,15 +1,12 @@
 
 package cz.hartrik.linecount.app;
 
-import cz.hartrik.common.reflect.StopWatch;
-import cz.hartrik.linecount.analyze.DataTypeCode;
-import cz.hartrik.linecount.analyze.FileFilter;
-import cz.hartrik.linecount.analyze.LineCountProvider;
-import cz.hartrik.linecount.analyze.SimpleStringConsumer;
+import cz.hartrik.linecount.analyze.*;
 import cz.hartrik.linecount.app.out.OutputManager;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -23,7 +20,7 @@ import javafx.scene.layout.*;
 /**
  * Controller
  *
- * @version 2016-03-13
+ * @version 2016-05-18
  * @author Patrik Harag
  */
 public class StageContentController implements Initializable {
@@ -122,49 +119,39 @@ public class StageContentController implements Initializable {
         clear();
 
         if (!paths.isEmpty()) {
-            SimpleStringConsumer stringConsumer = new SimpleStringConsumer();
+            SimpleStringConsumer logConsumer = new SimpleStringConsumer();
 
-            final String format = rb.getString("log/not-exists");
-            FileFilter fileFilter = new FileFilter(
-                    stagePanelInput.getFilter(),
-                    (p, e) -> stringConsumer.accept(String.format(format, p)));
-
-            Collection<Path> filtered = fileFilter.filter(paths);
-
-            if (filtered.isEmpty()) {
-                showResults(Collections.emptyList(), stringConsumer.toString());
-
-            } else {
-                Thread thread = new Thread(() -> process(filtered, stringConsumer));
-                thread.start();
-            }
+            Thread thread = new Thread(() -> process(paths, logConsumer));
+            thread.start();
         }
     }
 
     private void process(Collection<Path> paths, Consumer<String> consumer) {
-        LineCountProvider lineCountProvider = new LineCountProvider(consumer, rb);
-
+        // příprava UI
         Platform.runLater(() -> {
             enableEditing(false);
             showProgressBar();
         });
 
-        StopWatch stopWatch = StopWatch.measure(() -> {
-            int i = 0;
-            for (Path path : paths) {
-                lineCountProvider.analyze(path);
+        LineCountProvider provider = new LineCountProvider(rb);
 
-                final double progress = (double) ++i / paths.size();
-                Platform.runLater(() -> progressBar.setProgress(progress));
-            }
+        // nastavení filtru
+        provider.setFilter(stagePanelInput.getFilter());
+
+        // aktualizace progress baru
+        AtomicInteger i = new AtomicInteger();
+        provider.setOnAnalyzed(path -> {
+            double progress = (double) i.incrementAndGet() / paths.size();
+            Platform.runLater(() -> progressBar.setProgress(progress));
         });
 
-        final String format = rb.getString("log/time");
-        consumer.accept(String.format(format, stopWatch.getMillis()));
+        // provedení analýzy
+        Map<FileType, DataTypeCode> stats = provider.process(paths, consumer);
 
+        // uvedení UI do předchozího stavu a zobrazení výsledků
         Platform.runLater(() -> {
             hideProgressBar();
-            showResults(lineCountProvider.getStats().values(), consumer.toString());
+            showResults(stats.values(), consumer.toString());
             enableEditing(true);
         });
     }
