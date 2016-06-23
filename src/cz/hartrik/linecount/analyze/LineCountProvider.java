@@ -33,13 +33,16 @@ public class LineCountProvider {
      *
      * @param paths cesty k souborům a složkám, budou rekurzivně prohledány
      * @param logConsumer přebírá logy
+     * @param onFiltered zavolán po provedení filtrace souborů
      * @return statistiky
      */
-    public Map<FileType, DataTypeCode> process(
-            Collection<Path> paths, Consumer<String> logConsumer) {
+    public Map<FileType, DataTypeCode> process(Collection<Path> paths,
+            Consumer<String> logConsumer, Consumer<FileFilter> onFiltered) {
 
         FileFilter fileFilter = initFilter(logConsumer);
         Collection<Path> filteredPaths = fileFilter.filter(paths);
+
+        onFiltered.accept(fileFilter);
 
         LineCounter counter = new LineCounter(logConsumer, rb);
 

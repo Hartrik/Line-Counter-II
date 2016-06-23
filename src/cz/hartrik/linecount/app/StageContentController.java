@@ -140,13 +140,15 @@ public class StageContentController implements Initializable {
 
         // aktualizace progress baru
         AtomicInteger i = new AtomicInteger();
+        AtomicInteger size = new AtomicInteger(1);
         provider.setOnAnalyzed(path -> {
-            double progress = (double) i.incrementAndGet() / paths.size();
+            double progress = (double) i.incrementAndGet() / size.get();
             Platform.runLater(() -> progressBar.setProgress(progress));
         });
 
         // provedení analýzy
-        Map<FileType, DataTypeCode> stats = provider.process(paths, consumer);
+        Map<FileType, DataTypeCode> stats = provider.process(paths, consumer,
+                (f) -> size.set(f.getPassed()));
 
         // uvedení UI do předchozího stavu a zobrazení výsledků
         Platform.runLater(() -> {
