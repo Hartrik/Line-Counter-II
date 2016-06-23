@@ -26,8 +26,8 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    public static final String APP_VERSION = "1.3";
-    public static final String APP_VERSION_DATE = "2015-09-15";
+    public static final String APP_VERSION = "1.4";
+    public static final String APP_VERSION_DATE = "2016-06-23";
 
     static final String FILE_FXML = "StageContent.fxml";
     static final String FILE_FRAME_ICON = "icon - text (32).png";
