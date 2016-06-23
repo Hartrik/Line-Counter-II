@@ -26,7 +26,7 @@ Podporované jazyky: C, C++, C#, Clojure, CSS, Erlang, Groovy, HTML, Java, JavaS
   - **whitespace** – součet veškerých "bílých znaků"
   - **celkem** – součet veškerých znaků (včetně whitespace)
 
-![Preview](https://cloud.githubusercontent.com/assets/6131815/9882226/de6347f6-5bd3-11e5-8f9e-1fe4f89ab6d7.png)
+![Preview](https://cloud.githubusercontent.com/assets/6131815/16308129/0fe055d0-3964-11e6-813e-d7260f71c349.png)
 
 *Tip: Kliknutím do záhlaví se obsah seřadí podle hodnot ve sloupce.*
 
@@ -35,6 +35,8 @@ Podporované jazyky: C, C++, C#, Clojure, CSS, Erlang, Groovy, HTML, Java, JavaS
 Dialogové okno pro filtrování souborů je možné vyvolat kliknutím na tlačítko s ikonou filtru (po pravé straně od vstupního textového pole).
 
 Regulární výraz může být aplikován buď jen na název souboru (např.: `soubor.txt`) nebo na absolutní cestu k souboru (např.: `C:\Dokumenty\soubor.txt`).
+
+Jsou používány standardní regulární výrazy z Javy. Pokud chceme například vyhledat všechny soubory s příponou `.java`, může regulární výraz vypadat takto: `.+\.java`
 
 ## Mějte na paměti
 
